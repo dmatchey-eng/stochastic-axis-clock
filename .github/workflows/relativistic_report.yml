@@ -45,7 +45,19 @@ jobs:
         const chFreq = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
         const colors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
 
+        # Seed starting alignments randomly to force unique exploratory world-lines
+        let randomPhaseSeed = Math.random() * 500.0;
+        pX[0] = calculateAxisPosition(uFib[0], uFreq[0], 0.0 + randomPhaseSeed);
+
         let svgContent = '<svg width=\"800\" height=\"500\" xmlns=\"http://w3.org\" style=\"background:#050608;\">';
+
+        function getMutatedSuperIndex(timeMs) {
+        let superIdx = Math.floor(timeMs * 0.002) % 153;
+            if (Math.random() < 0.05) {
+        superIdx = (superIdx + 2) % 153; // Leap forward unnaturally
+        }
+        return superIdx;
+        }
         
         // Render cybernetic background grid matrices
         for (let i = 1; i < 10; i++) {
