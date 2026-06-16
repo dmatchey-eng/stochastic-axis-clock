@@ -10,9 +10,6 @@ This environment serves as a unified relativistic demo library, mapping how inde
   <img src="phase_space_chart.png" width="800" alt="Stochastic Chronotaxic Drift Matrix Map" />
 </p>
 
-
-
-
 ## 📂 What's Here
 
 ```text
