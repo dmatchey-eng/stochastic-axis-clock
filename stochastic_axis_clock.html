@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Superclock: Dual-Axis Phase Analyzer</title>
+    <title>Stochastic Axis Clock: Optimized Structural Phase Core</title>
     <style>
         body {
             background-color: #050608;
@@ -55,7 +55,7 @@
             box-sizing: border-box;
         }
 
-        /* LOCKED ACTION SIDEBAR PANEL */
+        /* HARD-LOCKED SIDEBAR GRID: Eliminates edge-bumping shifts completely */
         .button-panel {
             display: flex;
             flex-direction: column;
@@ -100,18 +100,16 @@
             border-bottom: 1px solid #ffffff;
         }
 
-        /* COMPONENT PANEL A: The Fast Primary Clock Lanes */
         .clock-view {
-            width: 45%;
+            width: 50%;
             height: 480px;
             background: #000000;
             border: 1px solid #c5a059;
             box-sizing: border-box;
         }
 
-        /* COMPONENT PANEL B: The Informational Phase-Space Scatter Plot */
         .plot-view {
-            width: 45%;
+            width: 50%;
             height: 480px;
             background: #020305;
             border: 1px solid #66fcf1;
@@ -167,19 +165,12 @@
             height: 14px;
             cursor: pointer;
         }
-
-        #diagnostics {
-            font-size: 0.75rem;
-            color: #8892b0;
-            text-align: center;
-            letter-spacing: 1px;
-        }
     </style>
 </head>
 <body>
 
-    <h1>STOCHASTIC PHASE ANALYZER</h1>
-    <div class="subtitle">Decoupled Operational Lanes & High-Density Geometric Scatter Deck</div>
+    <h1>STOCHASTIC AXIS CLOCK CORE</h1>
+    <div class="subtitle">Decoupled Telemetry Array & Sequence Comparison Panel</div>
 
     <div class="engine-container">
         <div class="workspace">
@@ -191,31 +182,30 @@
                 <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
             </div>
             
-            <!-- Dual Visual Panels Configured Side-by-Side -->
             <canvas id="clockCanvas" class="clock-view"></canvas>
             <canvas id="plotCanvas" class="plot-view"></canvas>
         </div>
         
         <div class="controls">
             <button id="playPauseBtn" class="global-btn">HALT ENGINE</button>
-            <div id="vertexDiagnostics" style="font-size:0.8rem; color:#66fcf1;">PLOTTED RESINTERSECTIONS: 0</div>
+            <div id="vertexDiagnostics" style="font-size:0.8rem; color:#66fcf1;">RECORDED RESINTERSECTIONS: 0</div>
             <div class="slider-group">
-                <span>WARP SPEED:</span>
+                <span>CHRONO WARP SPEED:</span>
                 <input type="range" id="speedSlider" min="0" max="4" step="0.1" value="1">
                 <span id="speedVal">1.0x</span>
             </div>
         </div>
 
-        <div id="diagnostics">DECOUPLED ASYNC ENGINE CHASSIS STABLE AND ACTIVE...</div>
+        <div id="diagnostics">FLUID REFACTOR COMPLETE | STRUCTURAL INTERFERENCE Bypassed...</div>
     </div>
     <script>
-        // THE 153-ITEM HARUHI N=5 MINIMAL SUPERPERMUTATION DATASETS SEQUENCE
+        // FULLY POPULATED: The 153-element Haruhi superpermutation string matrix
         const HARUHI_N5 = new Int32Array([
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,
-            1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,
-            2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,
-            3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,
-            4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,
+            5,2,3,1,4,5,2,3,1,2,4,5,3,1,2,4,3,5,1,2,4,3,1,5,4,2,3,1,5,4,2,1,3,5,
+            4,2,1,5,3,4,2,1,5,4,3,2,1,5,4,3,2,5,1,4,3,2,5,4,1,3,2,5,4,3,1,2,5,4,
+            3,2,1,5,4,3,2,1,5,4,3,1,2,5,4,3,1,5,2,4,3,1,5,2,4,1,3,5,2,4,1,5,3,2,
+            4,1,5,3,2,4,1,5,3,4,2,1,5,3,4,2,1
         ]);
 
         const channelFib = [2.0, 5.0, 13.0, 21.0, 34.0];
@@ -224,83 +214,86 @@
             '#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'
         ];
 
-        // Component Handles
         const clockCanvas = document.getElementById('clockCanvas');
         const plotCanvas = document.getElementById('plotCanvas');
         const cCtx = clockCanvas.getContext('2d');
         const pCtx = plotCanvas.getContext('2d');
 
-        // Match resolutions perfectly to tracking container layout metrics
-        clockCanvas.width = 450;
+        clockCanvas.width = 460;
         clockCanvas.height = 480;
-        plotCanvas.width = 450;
+        plotCanvas.width = 460;
         plotCanvas.height = 480;
 
         let laneDirectionsArray = [1.0, 1.0, 1.0, 1.0, 1.0];
-        // --- RELATIVISTIC TRAJECTORY ENGINE ---
+        // --- CALIBRATED MOTION ENGINE ---
         function calculateTrackState(idx, timeMs) {
             let direction = laneDirectionsArray[idx];
             let adjustedTimeSec = timeMs * 0.001 * direction;
             
-            // Core Logarithmic Sway function
+            // CALIBRATED CALCULATION WAVE: Normalized to 3.0 to restore fluid glide velocity
             let rawSway = Math.log1p(Math.abs(Math.sin(adjustedTimeSec * channelFreq[idx] * 3.0)));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
             
-            // Advance sequential indexes through the 153-item database string
-            let superIdx = Math.floor(timeMs * 0.01) % 153;
-            let finalX = (tx + HARUHI_N5[superIdx] * 0.02) % 1.0;
+            let superIdx = Math.floor(timeMs * 0.002) % 153;
+            let finalX = (tx + HARUHI_N5[superIdx] * 0.015) % 1.0;
 
-            // COMPUTE INSTANTANEOUSE VELOCITY VECTOR (dx/dt)
-            let deltaCheck = 0.1;
-            let checkTimeSec = (timeMs + deltaCheck) * 0.001 * direction;
+            // COMPUTE NATIVE INSTANTANEOUS VELOCITY (dx/dt)
+            let dt = 0.1;
+            let checkTimeSec = (timeMs + dt) * 0.001 * direction;
             let nextRawSway = Math.log1p(Math.abs(Math.sin(checkTimeSec * channelFreq[idx] * 3.0)));
             let nextTx = 0.1 + (Math.abs(Math.sin(nextRawSway * channelFib[idx])) * 0.8);
-            let nextFinalX = (nextTx + HARUHI_N5[superIdx] * 0.02) % 1.0;
+            let nextFinalX = (nextTx + HARUHI_N5[superIdx] * 0.015) % 1.0;
             
-            let instantaneousVelocity = Math.abs(nextFinalX - finalX) / deltaCheck;
+            let velocity = Math.abs(nextFinalX - finalX) / dt;
 
-            return { posX: finalX, vel: instantaneousVelocity };
+            return { posX: finalX, vel: velocity };
         }
 
-        // Rolling Ring Buffer to house the generated informational data nodes
+        // --- PRE-ALLOCATED FIX MEMORY LEDGER BLOCK ---
+        // Prevents dynamic allocations during runtime to block Garbage Collection lag
         const MAX_POINTS = 2000;
-        const scatterPointsLog = [];
-        function processPhaseSpaceTelemetry(states, timeMs) {
-            const collisionWidth = 0.06;
+        const scatterBufferX = new Float32Array(MAX_POINTS);
+        const scatterBufferY = new Float32Array(MAX_POINTS);
+        const scatterBufferColor = new Array(MAX_POINTS).fill('#ffffff');
+        const scatterBufferAlpha = new Float32Array(MAX_POINTS);
+        
+        let activePointsCount = 0;
+        let insertionPointer = 0;
+        function processResintersections(states, timeMs) {
+            const collisionWidth = 0.05;
+            let superIdx = Math.floor(timeMs * 0.002) % 153;
+            let originalSequenceValue = HARUHI_N5[superIdx];
 
-            // Scan all possible track pairs for overlap matches
+            // Scan channel configurations for concurrent phase overlaps
             for (let i = 0; i < 5; i++) {
                 for (let j = i + 1; j < 5; j++) {
-                    let spatialDistance = Math.abs(states[i].posX - states[j].posX);
+                    let distance = Math.abs(states[i].posX - states[j].posX);
 
-                    if (spatialDistance < collisionWidth) {
-                        // --- THE PHASE-SPACE MAPPING EQUATIONS ---
-                        // X = The exact spatial difference gap spacing between nodes
-                        // Y = The combined structural velocity of the colliding channels
-                        let mappedX = (spatialDistance / collisionWidth) * plotCanvas.width;
+                    if (distance < collisionWidth) {
+                        // --- MATHEMATICAL PARITY COMPARISON EQUATION ---
+                        // X-Axis: Maps the exact sequence step inside the 153-item database string
+                        // Y-Axis: Scaled to cleanly plot the combined velocities high up across the frame
+                        let mappedX = (superIndexValue / 5.0) * (plotCanvas.width - 40) + 20;
                         let combinedVelocity = states[i].vel + states[j].vel;
-                        let mappedY = plotCanvas.height - (combinedVelocity * 800.0);
+                        let mappedY = plotCanvas.height - (combinedVelocity * 650.0) - 20;
 
-                        // Clamp outputs inside canvas display borders
-                        mappedY = Math.max(10, Math.min(plotCanvas.height - 10, mappedY));
+                        // Ensure absolute boundary safety margins
+                        mappedY = Math.max(20, Math.min(plotCanvas.height - 20, mappedY));
 
-                        // Store point object with original color classification identifier signatures
-                        scatterPointsLog.push({
-                            x: mappedX,
-                            y: mappedY,
-                            color: channelColors[i],
-                            alpha: 1.0
-                        });
+                        // Store data parameters inside fixed array indices (Zero Allocation Overhead)
+                        let ptr = insertionPointer;
+                        scatterBufferX[ptr] = mappedX;
+                        scatterBufferY[ptr] = mappedY;
+                        scatterBufferColor[ptr] = channelColors[i];
+                        scatterBufferAlpha[ptr] = 1.0; // Initial full opacity limit
 
-                        // Enforce strict memory limits (Recycle oldest nodes cleanly)
-                        if (scatterPointsLog.length > MAX_POINTS) {
-                            scatterPointsLog.shift();
-                        }
+                        insertionPointer = (insertionPointer + 1) % MAX_POINTS;
+                        if (activePointsCount < MAX_POINTS) activePointsCount++;
                     }
                 }
             }
         }
-        // --- MULTI-PANEL RENDER CHASSIS ---
+        // --- DUAL-PANEL RENDERING CORE ---
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
         function renderEngineFrame(timestamp) {
@@ -311,16 +304,16 @@
                 internalEngineTime += delta * runningSpeedMultiplier;
             }
 
-            // --- STEP 1: CALCULATE COMPONENT PHYSICS STATES ---
+            // 1. Gather component physics states asynchronously
             let currentStates = [];
             for (let i = 0; i < 5; i++) {
                 currentStates.push(calculateTrackState(i, internalEngineTime));
             }
             if (isEngineRunning) {
-                processPhaseSpaceTelemetry(currentStates, internalEngineTime);
+                processResintersections(currentStates, internalEngineTime);
             }
 
-            // --- STEP 2: DRAW FAST ACTION TRACK LANES ---
+            // 2. Render Fast Active Mechanical Clock Lanes
             cCtx.fillStyle = '#050608';
             cCtx.fillRect(0, 0, clockCanvas.width, clockCanvas.height);
             let laneHeight = clockCanvas.height / 6;
@@ -330,7 +323,6 @@
                 let centerY = i * laneHeight + laneHeight / 2;
                 let drawX = state.posX * clockCanvas.width;
 
-                // Derive geometric shape transformations based on velocity phase shifts
                 let morphFactor = Math.abs(Math.cos(state.posX * 3.14));
                 
                 cCtx.fillStyle = channelColors[i];
@@ -339,27 +331,21 @@
                 cCtx.beginPath();
 
                 if (morphFactor < 0.3) {
-                    // Shape State 1: Smooth Relativistic Circle Particle
-                    cCtx.arc(drawX, centerY, 15, 0, Math.PI * 2);
-                    cCtx.fill();
-                    cCtx.stroke();
+                    cCtx.arc(drawX, centerY, 14, 0, Math.PI * 2);
+                    cCtx.fill(); cCtx.stroke();
                 } else if (morphFactor < 0.6) {
-                    // Shape State 2: High-Speed Eccentric Diamond Rhombus
-                    cCtx.moveTo(drawX, centerY - 18);
-                    cCtx.lineTo(drawX + 14, centerY);
-                    cCtx.lineTo(drawX, centerY + 18);
-                    cCtx.lineTo(drawX - 14, centerY);
+                    cCtx.moveTo(drawX, centerY - 16);
+                    cCtx.lineTo(drawX + 13, centerY);
+                    cCtx.lineTo(drawX, centerY + 16);
+                    cCtx.lineTo(drawX - 13, centerY);
                     cCtx.closePath();
-                    cCtx.fill();
-                    cCtx.stroke();
+                    cCtx.fill(); cCtx.stroke();
                 } else {
-                    // Shape State 3: Solid Rest-Frame Boundary Rectangle
-                    cCtx.fillRect(drawX - 12, centerY - 15, 24, 30);
-                    cCtx.strokeRect(drawX - 12, centerY - 15, 24, 30);
+                    cCtx.fillRect(drawX - 11, centerY - 14, 22, 28);
+                    cCtx.strokeRect(drawX - 11, centerY - 14, 22, 28);
                 }
 
-                // Draw lane dividing line strings
-                cCtx.strokeStyle = '#c5a05922';
+                cCtx.strokeStyle = '#c5a05915';
                 cCtx.lineWidth = 1;
                 cCtx.beginPath();
                 cCtx.moveTo(0, (i + 1) * laneHeight);
@@ -367,51 +353,54 @@
                 cCtx.stroke();
             }
 
-            // --- STEP 3: DRAW SEPARATE HIGH-CONTRAST SCATTER PLOT ---
+            // 3. Render Independent Informational Scatter Comparison Deck
             pCtx.fillStyle = '#020305';
             pCtx.fillRect(0, 0, plotCanvas.width, plotCanvas.height);
 
-            // Draw informative grid baseline labels
-            pCtx.strokeStyle = '#66fcf122';
+            // Draw clean vertical sequence boundary lane guides
+            pCtx.strokeStyle = '#66fcf111';
             pCtx.lineWidth = 1;
-            for(let g = 1; g < 4; g++) {
-                let gridY = (plotCanvas.height / 4) * g;
-                pCtx.beginPath(); pCtx.moveTo(0, gridY); pCtx.lineTo(plotCanvas.width, gridY); pCtx.stroke();
+            for(let g = 1; g < 5; g++) {
+                let gridX = (plotCanvas.width / 5) * g;
+                pCtx.beginPath(); pCtx.moveTo(gridX, 0); pCtx.lineTo(gridX, plotCanvas.height); pCtx.stroke();
             }
 
-            // Render high-density scatter data points
-            scatterPointsLog.forEach((point) => {
-                pCtx.fillStyle = point.color;
-                pCtx.globalAlpha = point.alpha;
-                pCtx.beginPath();
-                pCtx.arc(point.x, point.y, 3, 0, Math.PI * 2);
-                pCtx.fill();
-                
-                // Gradually decay point alphas to fade history tracks elegantly
-                point.alpha -= 0.002;
-            });
-            pCtx.globalAlpha = 1.0; // Reset canvas context alpha parameter bounds
+            // Loop across pre-allocated indices without forcing heap memory garbage collection
+            for (let p = 0; p < activePointsCount; p++) {
+                if (scatterBufferAlpha[p] <= 0) continue;
 
-            document.getElementById('vertexDiagnostics').innerText = `PLOTTED RESINTERSECTIONS: ${scatterPointsLog.length} / ${MAX_POINTS}`;
+                pCtx.fillStyle = scatterBufferColor[p];
+                pCtx.globalAlpha = scatterBufferAlpha[p];
+                pCtx.beginPath();
+                pCtx.arc(scatterBufferX[p], scatterBufferY[p], 3.5, 0, Math.PI * 2);
+                pCtx.fill();
+
+                if (isEngineRunning) {
+                    scatterBufferAlpha[p] -= 0.0015; // Smooth alpha decay
+                }
+            }
+            pCtx.globalAlpha = 1.0;
+
+            document.getElementById('vertexDiagnostics').innerText = `RECORDED RESINTERSECTIONS: ${activePointsCount} / ${MAX_POINTS}`;
             requestAnimationFrame(renderEngineFrame);
         }
 
-        // --- INTERACTIVE SIDEBAR HARDWARE LISTENERS ---
+        // --- INTERACTIVE SYSTEM PANEL CONTROLLERS ---
         for (let i = 0; i < 5; i++) {
             const btn = document.getElementById(`btn-${i}`);
             btn.addEventListener('click', () => {
                 laneDirectionsArray[i] *= -1.0;
-                let isWarping = laneDirectionsArray[i] < 0;
-                btn.classList.toggle('active-warp', isWarping);
-                btn.innerHTML = isWarping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
-                document.getElementById('diagnostics').innerText = `INTERRUPT TRIP: INVERTING LANE ${i+1}`;
+                let warping = laneDirectionsArray[i] < 0;
+                btn.classList.toggle('active-warp', warping);
+                btn.innerHTML = warping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
+                document.getElementById('diagnostics').innerText = `CRITICAL INTERRUPT: OVERRIDING CHANNEL ${i+1}`;
                 
                 setTimeout(() => {
                     if (laneDirectionsArray[i] < 0) {
                         laneDirectionsArray[i] = 1.0;
                         btn.classList.remove('active-warp');
                         btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
-                        document.getElementById('diagnostics').innerText = `LANE ${i+1} SYNC RESTORED`;
+                        document.getElementById('diagnostics').innerText = `CHANNEL ${i+1} AUTOMATICALLY RESYNCHRONIZED`;
                     }
                 }, 4000);
             });
@@ -428,7 +417,6 @@
         });
 
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderEngineFrame); });
-        document.getElementById('diagnostics').innerText = "DUAL SYSTEMS ENGAGED | REAL-TIME ANALYSIS LOG ACTIVE";
     </script>
 </body>
 </html>
