@@ -3,33 +3,31 @@ name: Relativistic Simulation Report Generator
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: # Allows manual pipeline triggering directly from the Actions tab
+  workflow_dispatch: 
 
 jobs:
   build-and-profile:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Crucial permission flag allowing the runner to build releases
+      contents: write 
 
     steps:
     - name: 1. Ingest Repository Codebase
       uses: actions/checkout@v4
 
     - name: 2. Initialize Node.js High-Precision Runtime Environment
-      uses: actions/views/setup-node@v4
+      # FIXED: Swapped out the typo action for the official repository setup action
+      uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'npm'
 
     - name: 3. Provision Core Headless Browser Dependencies
-      # Installs Chrome/Chromium binaries and low-level Linux graphics packages
       run: |
         npm init -y
-        npm install playwright @observablehq/plot canvas
+        npm install playwright canvas
         npx playwright install chromium --with-deps
 
-    - name: 4. Execute Headless Visual Capture Engine (Xvfb Virtual Display)
-      # Launches clock arrays inside a virtual monitor to safely capture shape-shifting states
+    - name: 4. Execute Headless Visual Capture Engine
       run: |
         node -e "
         import { chromium } from 'playwright';
@@ -38,8 +36,6 @@ jobs:
         async function captureSimulation() {
           const browser = await chromium.launch();
           const page = await browser.newPage();
-          
-          // Map to local repository asset geometry path
           const url = 'file://' + process.cwd() + '/superclock.html';
           console.log('Ingesting visual canvas tracks via:', url);
           
@@ -49,7 +45,6 @@ jobs:
           console.log('Allowing Fibonacci loops to settle and accelerate for 5000ms...');
           await page.waitForTimeout(5000);
           
-          // Capture raw layout state profile snapshot
           await page.screenshot({ path: 'output_superclock_frame.png', fullPage: true });
           console.log('High-contrast shader snapshot stored successfully.');
           
@@ -59,11 +54,8 @@ jobs:
         "
 
     - name: 5. Execute Host Analytical Profilers
-      # Spins up your zero-allocation validations and writes metrics out to a local ledger file
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
-        
-        # Run the validation core in the background for 6 seconds, routing output streams to our log
         node combinatorial_core.js >> analytical_report.log &
         PID=$!
         sleep 6
@@ -74,16 +66,60 @@ jobs:
         PID_COMP=$!
         sleep 6
         kill $PID_COMP
-        
-        console.log('Analytical logging checks generated.')
 
-    - name: 6. Generate Mathematical Phase Scatter Plots
-      # Uses programmatic charting to convert the logged metrics into visual chart assets
+    - name: 6. Generate Detailed Mathematical Phase Scatter Plots (SVG Vector Shapes)
+      # UPGRADED: Generates intricate geometric waveforms mapping out the phase space boundaries
       run: |
         node -e "
         import fs from 'fs';
-        // You can utilize D3 or basic Node scripts to generate programmatic phase charts here
-        fs.writeFileSync('phase_space_chart.svg', '<svg width=\"500\" height=\"300\"><rect width=\"100%\" height=\"100%\" fill=\"#020305\"/><text x=\"20\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\">STOCHASTIC DRIFT VARIANCE BOUNDARY MAP</text></svg>');
+
+        const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
+        const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
+        const colors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
+
+        let svgContent = '<svg width=\"800\" height=\"500\" xmlns=\"http://w3.org\" style=\"background:#050608;\">';
+        
+        // Add futuristic matrix grid background guidelines
+        for (let i = 1; i < 10; i++) {
+          let x = i * 80;
+          let y = i * 50;
+          svgContent += \`<line x1=\"\${x}\" y1=\"0\" x2=\"\${x}\" y2=\"500\" stroke=\"#c5a05911\" stroke-width=\"1\"/>\`;
+          svgContent += \`<line x1=\"0\" y1=\"\${y}\" x2=\"800\" y2=\"\${y}\" stroke=\"#c5a05911\" stroke-width=\"1\"/>\`;
+        }
+
+        svgContent += '<text x=\"30\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\">STOCHASTIC PHASE VARIANCE LANDSCAPE</text>';
+        svgContent += '<text x=\"30\" y=\"60\" fill=\"#8892b0\" font-family=\"monospace\" font-size=\"10\">MODEL: FIBONACCI SWAY LAYER (N=5)</text>';
+
+        // Programmatically plot hundreds of intersecting vector shapes representing wave collisions
+        for (let t = 0; t < 800; t += 2) {
+          let timeSec = t * 0.1;
+          
+          for (let i = 0; i < 5; i++) {
+            // Replicate the Logarithmic Sway position tracking math
+            let rawSway = Math.log1p(Math.abs(Math.sin(timeSec * chFreq[i] * 3.0)));
+            let posX = 0.1 + (Math.abs(Math.sin(rawSway * chFib[i])) * 0.8);
+            
+            // Map the calculated positions cleanly onto the 800x500 pixel canvas window boundaries
+            let plotX = posX * 740 + 30;
+            let plotY = 460 - (Math.log1p(chFib[i]) * 110) + (Math.sin(timeSec * 0.5) * 15);
+
+            // Alternate shapes between circles and diamonds depending on wave trajectory phases
+            if (t % 12 === 0) {
+              // Draw an intricate vector diamond rhombus shape node
+              svgContent += \`<polygon points=\"\${plotX},\${plotY-6} \${plotX+5},$\{plotY} \${plotX},\${plotY+6} \${plotX-5},\${plotY}\" fill=\"none\" stroke=\"\${colors[i]}\" stroke-width=\"1.5\" opacity=\"0.7\"/>\`;
+            } else {
+              // Draw a standard circular coordinate tracking orbital dot
+              svgContent += \`<circle cx=\"\${plotX}\" cy=\"\${plotY}\" r=\"2.5\" fill=\"\${colors[i]}\" opacity=\"0.5\"/>\`;
+            }
+          }
+        }
+
+        // Add bounding axis indicator outline boundaries
+        svgContent += '<rect x=\"20\" y=\"20\" width=\"760\" height=\"460\" fill=\"none\" stroke=\"#c5a05933\" stroke-width=\"1\"/>';
+        svgContent += '</svg>';
+
+        fs.writeFileSync('phase_space_chart.svg', svgContent);
+        console.log('Detailed math vector chart successfully compiled.');
         "
 
     - name: 7. Compile Release Package Metadata
@@ -107,7 +143,7 @@ jobs:
           
           ### Included Phase Diagnostic Outputs:
           1. `output_superclock_frame.png` - Real-time visual snapshot capturing current Lorentz shape-morph profiles.
-          2. `phase_space_chart.svg` - Statistical vector plot tracking cross-lane intersection coordinates.
+          2. `phase_space_chart.svg` - Programmatic vector shape asset rendering the five channel trajectories concurrently.
           3. `analytical_report.log` - Raw nanosecond timing profiles capturing hardware drift relative to the atomic reference.
         files: |
           output_superclock_frame.png
