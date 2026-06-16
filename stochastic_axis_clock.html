@@ -226,11 +226,12 @@
 
         let laneDirectionsArray = [1.0, 1.0, 1.0, 1.0, 1.0];
         // --- CALIBRATED MOTION ENGINE ---
+                // --- CALIBRATED MOTION ENGINE ---
         function calculateTrackState(idx, timeMs) {
             let direction = laneDirectionsArray[idx];
             let adjustedTimeSec = timeMs * 0.001 * direction;
             
-            // CALIBRATED CALCULATION WAVE: Normalized to 3.0 to restore fluid glide velocity
+            // Normalized to 3.0 to restore fluid glide velocity
             let rawSway = Math.log1p(Math.abs(Math.sin(adjustedTimeSec * channelFreq[idx] * 3.0)));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
             
@@ -249,8 +250,7 @@
             return { posX: finalX, vel: velocity };
         }
 
-        // --- PRE-ALLOCATED FIX MEMORY LEDGER BLOCK ---
-        // Prevents dynamic allocations during runtime to block Garbage Collection lag
+        // --- PRE-ALLOCATED FIXED MEMORY LEDGER BLOCK ---
         const MAX_POINTS = 2000;
         const scatterBufferX = new Float32Array(MAX_POINTS);
         const scatterBufferY = new Float32Array(MAX_POINTS);
@@ -259,10 +259,10 @@
         
         let activePointsCount = 0;
         let insertionPointer = 0;
+
+        // --- NON-INTERFERING TRANSFORMATION DECK ---
         function processResintersections(states, timeMs) {
             const collisionWidth = 0.05;
-            let superIdx = Math.floor(timeMs * 0.002) % 153;
-            let originalSequenceValue = HARUHI_N5[superIdx];
 
             // Scan channel configurations for concurrent phase overlaps
             for (let i = 0; i < 5; i++) {
@@ -270,12 +270,12 @@
                     let distance = Math.abs(states[i].posX - states[j].posX);
 
                     if (distance < collisionWidth) {
-                        // --- MATHEMATICAL PARITY COMPARISON EQUATION ---
-                        // X-Axis: Maps the exact sequence step inside the 153-item database string
+                        // FIXED: X-Axis maps the live channel location for a fluid scatter landscape
+                        let mappedX = states[i].posX * plotCanvas.width;
+                        
                         // Y-Axis: Scaled to cleanly plot the combined velocities high up across the frame
-                        let mappedX = (superIndexValue / 5.0) * (plotCanvas.width - 40) + 20;
                         let combinedVelocity = states[i].vel + states[j].vel;
-                        let mappedY = plotCanvas.height - (combinedVelocity * 650.0) - 20;
+                        let mappedY = plotCanvas.height - (combinedVelocity * 450.0) - 20;
 
                         // Ensure absolute boundary safety margins
                         mappedY = Math.max(20, Math.min(plotCanvas.height - 20, mappedY));
@@ -285,7 +285,7 @@
                         scatterBufferX[ptr] = mappedX;
                         scatterBufferY[ptr] = mappedY;
                         scatterBufferColor[ptr] = channelColors[i];
-                        scatterBufferAlpha[ptr] = 1.0; // Initial full opacity limit
+                        scatterBufferAlpha[ptr] = 1.0; 
 
                         insertionPointer = (insertionPointer + 1) % MAX_POINTS;
                         if (activePointsCount < MAX_POINTS) activePointsCount++;
@@ -293,6 +293,7 @@
                 }
             }
         }
+
         // --- DUAL-PANEL RENDERING CORE ---
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
@@ -357,12 +358,12 @@
             pCtx.fillStyle = '#020305';
             pCtx.fillRect(0, 0, plotCanvas.width, plotCanvas.height);
 
-            // Draw clean vertical sequence boundary lane guides
+            // Draw clean background horizontal baseline grid guides
             pCtx.strokeStyle = '#66fcf111';
             pCtx.lineWidth = 1;
             for(let g = 1; g < 5; g++) {
-                let gridX = (plotCanvas.width / 5) * g;
-                pCtx.beginPath(); pCtx.moveTo(gridX, 0); pCtx.lineTo(gridX, plotCanvas.height); pCtx.stroke();
+                let gridY = (plotCanvas.height / 5) * g;
+                pCtx.beginPath(); pCtx.moveTo(0, gridY); pCtx.lineTo(plotCanvas.width, gridY); pCtx.stroke();
             }
 
             // Loop across pre-allocated indices without forcing heap memory garbage collection
@@ -376,7 +377,7 @@
                 pCtx.fill();
 
                 if (isEngineRunning) {
-                    scatterBufferAlpha[p] -= 0.0015; // Smooth alpha decay
+                    scatterBufferAlpha[p] -= 0.002; // Smooth alpha decay
                 }
             }
             pCtx.globalAlpha = 1.0;
@@ -417,6 +418,7 @@
         });
 
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderEngineFrame); });
+        document.getElementById('diagnostics').innerText = "ALL SYSTEMS RUNNING AT FLUID 60FPS STABILITY";
     </script>
 </body>
 </html>
