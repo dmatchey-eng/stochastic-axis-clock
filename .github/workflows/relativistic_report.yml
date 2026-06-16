@@ -20,7 +20,13 @@ jobs:
       with:
         node-version: 20
 
-    - name: 3. Execute Host Analytical Profilers
+    - name: 3. Provision Native Image Conversion Tools (Librsvg)
+      # Installs rsvg-convert to parse XML paths straight into true raster pixels
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y librsvg2-bin
+
+    - name: 4. Execute Host Analytical Profilers
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
         node combinatorial_core.js >> analytical_report.log &
@@ -34,26 +40,28 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 4. Generate Detailed Mathematical Phase Scatter Plots (SVG Vector Shapes)
-      # SANITIZED: Incorporates your 153-element data string and applies strict double-quoted escaping to satisfy the GitHub XML rules
+    - name: 5. Generate Detailed Mathematical Phase Scatter Plots (SVG Base Map)
+      # Fixed loop bounds with valid double-quoted XML output structures
       run: |
         node -e "
         import fs from 'fs';
         const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
         const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
         const colors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
+
+        // THE COMPLETE 153-ELEMENT HARUHI DATASET MULTIPLIER
         const HARUHI_N5 = new Int32Array([1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,4,5,2,1,3,4,2,5,1,3,4,2,1,5,3,4,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1]);
 
-        let svgContent = \"<svg xmlns=\\\"http://w3.org\\\" width=\\\"800\\\" height=\\\"500\\\" style=\\\"background:#050608;\\\">\";
+        let svgContent = '<svg xmlns=\"http://w3.org\" width=\"800\" height=\"500\" style=\"background:#050608;\">';
         
         for (let i = 1; i < 10; i++) {
           let x = i * 80; let y = i * 50;
-          svgContent += \"<line x1=\\\"\" + x + \"\\\" y1=\\\"0\\\" x2=\\\"\" + x + \"\\\" y2=\\\"500\\\" stroke=\\\"#c5a05911\\\" stroke-width=\\\"1\\\"/>\";
-          svgContent += \"<line x1=\\\"0\\\" y1=\\\"\" + y + \"\\\" x2=\\\"800\\\" y2=\\\"\" + y + \"\\\" stroke=\\\"#c5a05911\\\" stroke-width=\\\"1\\\"/>\";
+          svgContent += '<line x1=\"' + x + '\" y1=\"0\" x2=\"' + x + '\" y2=\"500\" stroke=\"#c5a05911\" stroke-width=\"1\"/>';
+          svgContent += '<line x1=\"0\" y1=\"' + y + '\" x2=\"800\" y2=\"' + y + '\" stroke=\"#c5a05911\" stroke-width=\"1\"/>';
         }
         
-        svgContent += \"<text x=\\\"30\\\" y=\\\"40\\\" fill=\\\"#66fcf1\\\" font-family=\\\"monospace\\\" font-size=\\\"14\\\" font-weight=\\\"bold\\\">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>\";
-        svgContent += \"<text x=\\\"30\\\" y=\\\"60\\\" fill=\\\"#8892b0\\\" font-family=\\\"monospace\\\" font-size=\\\"10\\\" >MATHEMATICAL SIMULATION PASSED OVER WORKFLOW ENGINE (N=5)</text>\";
+        svgContent += '<text x=\"30\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>';
+        svgContent += '<text x=\"30\" y=\"60\" fill=\"#8892b0\" font-family=\"monospace\" font-size=\"10\">MATHEMATICAL SIMULATION PASSED OVER WORKFLOW ENGINE (N=5)</text>';
 
         for (let t = 0; t < 800; t += 2) {
           let timeSec = t * 0.2;
@@ -67,55 +75,43 @@ jobs:
             let plotY = 440 - (Math.log1p(fibs[i]) * 100) + (Math.sin(timeSec * 0.4) * 12);
             
             if (t % 10 === 0) {
-              svgContent += \"<polygon points=\\\"\" + plotX + \",\" + (plotY-6) + \" \" + (plotX+5) + \",\" + plotY + \" \" + plotX + \",\" + (plotY+6) + \" \" + (plotX-5) + \",\" + plotY + \"\\\" fill=\\\"none\\\" stroke=\\\"\" + colors[i] + \"\\\" stroke-width=\\\"1.2\\\" opacity=\\\"0.6\\\"/>\";
+              svgContent += '<polygon points=\"' + plotX + ',' + (plotY-6) + ' ' + (plotX+5) + ',' + plotY + ' ' + plotX + ',' + (plotY+6) + ' ' + (plotX-5) + ',' + plotY + '\" fill=\"none\" stroke=\"' + colors[i] + '\" stroke-width=\"1.2\" opacity=\"0.6\"/>';
             } else {
-              svgContent += \"<circle cx=\\\"\" + plotX + \"\\\" cy=\\\"\" + plotY + \"\\\" r=\\\"2\\\" fill=\\\"\" + colors[i] + \"\\\" opacity=\\\"0.4\\\"/>\";
+              svgContent += '<circle cx=\"' + plotX + '\" cy=\"' + plotY + '\" r=\"2\" fill=\"' + colors[i] + '\" opacity=\"0.4\"/>';
             }
           }
         }
         
-        svgContent += \"<rect x=\\\"20\\\" y=\\\"20\\\" width=\\\"760\\\" height=\\\"460\\\" fill=\\\"none\\\" stroke=\\\"#c5a05933\\\" stroke-width=\\\"1\\\"/>\";
-        svgContent += \"</svg>\";
+        svgContent += '<rect x=\"20\" y=\"20\" width=\"760\" height=\"460\" fill=\"none\" stroke=\"#c5a05933\" stroke-width=\"1\"/>';
+        svgContent += '</svg>';
         
         fs.writeFileSync('phase_space_chart.svg', svgContent);
-        console.log('Valid double-quoted XML vector matrix successfully written.');
+        console.log('XML vector base map successfully compiled.');
         "
 
-    - name: 5. Encode Shape Matrix to Base64 Data URI String
+    - name: 6. Parse and Render Vector Data to Standard PNG Format
+      # THE IMAGE CONVERTER ENGINE: Intercepts the SVG and renders flat binary raster pixels
       run: |
-        node -e "
-        import fs from 'fs';
-        if (fs.existsSync('phase_space_chart.svg')) {
-          const rawSvg = fs.readFileSync('phase_space_chart.svg');
-          const b64 = rawSvg.toString('base64');
-          fs.writeFileSync('phase_space_base64.txt', 'data:image/svg+xml;base64,' + b64);
-        }
-        "
+        rsvg-convert -f png -w 800 -h 500 phase_space_chart.svg -o phase_space_chart.png
+        console.log('Standard binary PNG graphic successfully rendered.')
 
-    - name: 6. Push Fresh Vector Map to Code Tree
+    - name: 7. Push Rasterized Artifacts Straight to Code Tree
+      # Commits the clean .png asset using the write permissions token verified in Step 1
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@://github.com'
-        git add phase_space_chart.svg
-        git commit -m "data: auto-update stochastic phase space chart" || true
+        git add phase_space_chart.png
+        git commit -m "data: render and push standard format simulation snapshot" || true
         git push
-
-    - name: 7. Compile Release Package Metadata
-      id: get_version
-      run: |
-        echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
-        echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
     - name: 8. Package Relativistic Assets and Push GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ steps.get_version.outputs.version }}
-        name: Relativistic Telemetry Metrics - Release ${{ steps.get_version.outputs.version }}
+        tag_name: "v1.0.${{ github.run_number }}"
+        name: Relativistic Telemetry Metrics - Release v1.0.${{ github.run_number }}
         body: |
           ## 🌌 Stochastic Axis Clock Matrix Automation Report
-          - **Execution Timestamp:** `${{ steps.get_version.outputs.timestamp }}`
           - **Commit Node Anchor:** `${{ github.sha }}`
         files: |
-          phase_space_chart.svg
-          phase_space_base64.txt
+          phase_space_chart.png
           analytical_report.log
