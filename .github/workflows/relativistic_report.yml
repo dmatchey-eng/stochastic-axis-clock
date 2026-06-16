@@ -9,7 +9,7 @@ jobs:
   build-and-profile:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # FIXED: Grants direct write clearance to the runner session token
+      contents: write 
 
     steps:
     - name: 1. Ingest Repository Codebase
@@ -35,6 +35,7 @@ jobs:
         kill $PID_COMP
 
     - name: 4. Generate Detailed Mathematical Phase Scatter Plots (SVG Vector Shapes)
+      # SANITIZED: Every vector node attribute is wrapped in clean single quotes to ensure compliant XML output
       run: |
         node -e "
         import fs from 'fs';
@@ -42,30 +43,41 @@ jobs:
         const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
         const colors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
 
-        let svgContent = '<svg width=\"800\" height=\"500\" xmlns=\"http://w3.org\" style=\"background:#050608;\">';
+        let svgContent = '<svg xmlns=\'http://w3.org\' width=\'800\' height=\'500\' style=\'background:#050608;\'>';
+        
+        // Render precise matrix grid arrays
         for (let i = 1; i < 10; i++) {
           let x = i * 80; let y = i * 50;
-          svgContent += \`<line x1=\"\${x}\" y1=\"0\" x2=\"\${x}\" y2=\"500\" stroke=\"#c5a05911\" stroke-width=\"1\"/>\`;
-          svgContent += \`<line x1=\"0\" y1=\"\${y}\" x2=\"800\" y2=\"\${y}\" stroke=\"#c5a05911\" stroke-width=\"1\"/>\`;
+          svgContent += '<line x1=\'' + x + '\' y1=\'0\' x2=\'' + x + '\' y2=\'500\' stroke=\'#c5a05911\' stroke-width=\'1\'/>';
+          svgContent += '<line x1=\'' + 0 + '\' y1=\'' + y + '\' x2=\'' + 800 + '\' y2=\'' + y + '\' stroke=\'#c5a05911\' stroke-width=\'1\'/>';
         }
-        svgContent += '<text x=\"30\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>';
+        
+        svgContent += '<text x=\'30\' y=\'40\' fill=\'#66fcf1\' font-family=\'monospace\' font-size=\'14\' font-weight=\'bold\'>STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>';
+        
+        // Execute the 5-channel continuous timeline loop iterations
         for (let t = 0; t < 800; t += 2) {
           let timeSec = t * 0.2;
           for (let i = 0; i < 5; i++) {
+            // FIXED: References point strictly to the pre-declared fibs and freqs array pools
             let rawSway = Math.log1p(Math.abs(Math.sin(timeSec * freqs[i] * 3.0)));
             let posX = 0.1 + (Math.abs(Math.sin(rawSway * fibs[i])) * 0.8);
+            
             let plotX = posX * 740 + 30;
             let plotY = 440 - (Math.log1p(fibs[i]) * 100) + (Math.sin(timeSec * 0.4) * 12);
+            
             if (t % 10 === 0) {
-              svgContent += \`<polygon points=\"\${plotX},\${plotY-6} \${plotX+5},\${plotY} \${plotX},\${plotY+6} \${plotX-5},\${plotY}\" fill=\"none\" stroke=\"\${colors[i]}\" stroke-width=\"1.2\" opacity=\"0.6\"/>\`;
+              svgContent += '<polygon points=\'' + plotX + ',' + (plotY-6) + ' ' + (plotX+5) + ',' + plotY + ' ' + plotX + ',' + (plotY+6) + ' ' + (plotX-5) + ',' + plotY + '\' fill=\'none\' stroke=\'' + colors[i] + '\' stroke-width=\'1.2\' opacity=\'0.6\'/>';
             } else {
-              svgContent += \`<circle cx=\"\${plotX}\" cy=\"\${plotY}\" r=\"2\" fill=\"\${colors[i]}\" opacity=\"0.4\"/>\`;
+              svgContent += '<circle cx=\'' + plotX + '\' cy=\'' + plotY + '\' r=\'2\' fill=\'' + colors[i] + '\' opacity=\'0.4\'/>';
             }
           }
         }
-        svgContent += '<rect x=\"20\" y=\"20\" width=\"760\" height=\"460\" fill=\"none\" stroke=\"#c5a05933\" stroke-width=\"1\"/>';
+        
+        svgContent += '<rect x=\'20\' y=\'20\' width=\'760\' height=\'460\' fill=\'none\' stroke=\'#c5a05933\' stroke-width=\'1\'/>';
         svgContent += '</svg>';
+        
         fs.writeFileSync('phase_space_chart.svg', svgContent);
+        console.log('Sanitized XML vector matrix successfully written.');
         "
 
     - name: 5. Encode Shape Matrix to Base64 Data URI String
@@ -80,7 +92,6 @@ jobs:
         "
 
     - name: 6. Push Fresh Vector Map to Code Tree
-      # FIXED: Uses the updated read/write permissions token to push directly to main
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@://github.com'
