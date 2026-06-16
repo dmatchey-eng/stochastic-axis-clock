@@ -229,8 +229,8 @@
             uniform float uLaneDirections[5];
 
             float calculateAxisPosition(float fib, float freq, float offset, float direction) {
-                float adjustedTime = uTime * direction;
-                float rawSway = log(1.0 + abs(sin((adjustedTime * 0.0005 + offset) * freq)));
+            float adjustedTime = uTime * direction;
+            float rawSway = log(1.0 + abs(sin((adjustedTime * 0.01 + offset) * freq)));
                 return 0.1 + (abs(sin(rawSway * fib)) * 0.8);
             }
 
@@ -411,13 +411,14 @@
             [0.0, 1.0, 1.0], [1.0, 0.0, 0.5], [1.0, 0.7, 0.0], [0.0, 1.0, 0.5], [1.0, 1.0, 1.0]
         ];
 
-        function calculateTrackLocation(idx, timeMs) {
-            let timeSec = timeMs * laneDirectionsArray[idx];
-            let rawSway = Math.log1p(Math.abs(Math.sin((timeSec * 0.0005 + idx * 100.0) * channelFreq[idx])));
-            let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
-            let superIdx = Math.floor(timeMs * 0.0002) % 153;
-            return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
-        }
+function calculateTrackLocation(idx, timeMs) {
+    let timeSec = timeMs * laneDirectionsArray[idx];
+    let rawSway = Math.log1p(Math.abs(Math.sin((timeSec * 0.01 + idx * 100.0) * channelFreq[idx])));
+    let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
+    let superIdx = Math.floor(timeMs * 0.002) % 153;
+    return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
+}
+
 
         function processTransformerTelemetry(timeMs) {
             let positions = [];
