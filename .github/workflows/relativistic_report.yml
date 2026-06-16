@@ -20,11 +20,7 @@ jobs:
       with:
         node-version: 20
 
-    - name: 3. Provision Isolated Node Dependencies
-      # Installs sharp within the workspace directory to keep the engine fully decoupled from OS limits
-      run: npm install sharp
-
-    - name: 4. Execute Host Analytical Profilers
+    - name: 3. Execute Host Analytical Profilers
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
         node combinatorial_core.js >> analytical_report.log &
@@ -38,17 +34,23 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 5. Execute Self-Contained Simulation & Image Conversion
-      # Computes the math vectors and generates both the SVG and PNG formats purely in JavaScript
+    - name: 4. Compile Presentation Dashboard Layout
+      # Computes the math vectors and generates our clean visual document matrix layout
       run: node generate_matrix.js
 
-    - name: 6. Push Rasterized Artifacts Straight to Code Tree
+    - name: 5. Push Realtime Artifacts Straight to Code Tree
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@://github.com'
-        git add phase_space_chart.png
-        git commit -m "data: auto-render standard format simulation snapshot" || true
+        git add matrix_snapshot.html
+        git commit -m "data: auto-update stochastic phase presentation dashboard" || true
         git push
+
+    - name: 6. Compile Release Package Metadata
+      id: get_version
+      run: |
+        echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+        echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
     - name: 7. Package Relativistic Assets and Push GitHub Release
       uses: softprops/action-gh-release@v2
@@ -59,5 +61,5 @@ jobs:
           ## 🌌 Stochastic Axis Clock Matrix Automation Report
           - **Commit Node Anchor:** `${{ github.sha }}`
         files: |
-          phase_space_chart.png
+          matrix_snapshot.html
           analytical_report.log
