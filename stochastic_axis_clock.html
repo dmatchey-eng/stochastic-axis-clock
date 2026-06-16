@@ -279,7 +279,7 @@
                         // Y = The combined structural velocity of the colliding channels
                         let mappedX = (spatialDistance / collisionWidth) * plotCanvas.width;
                         let combinedVelocity = states[i].vel + states[j].vel;
-                        let mappedY = plotCanvas.height - (combinedVelocity * 805.0);
+                        let mappedY = plotCanvas.height - (combinedVelocity * 800.0);
 
                         // Clamp outputs inside canvas display borders
                         mappedY = Math.max(10, Math.min(plotCanvas.height - 10, mappedY));
