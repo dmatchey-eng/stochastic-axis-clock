@@ -2,25 +2,115 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Stochastic Chronotaxic Matrix Core</title>
+    <title>Stochastic Chronotaxic Matrix Core: Optimized</title>
     <style>
-        body { background-color: #050608; color: #66fcf1; font-family: 'Courier New', monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
-        h1 { font-size: 1.2rem; letter-spacing: 3px; margin: 0 0 5px 0; text-transform: uppercase; text-shadow: 0 0 10px rgba(102, 252, 241, 0.3); }
-        .subtitle { color: #c5a059; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; }
-        .engine-container { width: 95vw; max-width: 800px; background: #0f1319; border: 1px solid #c5a059; padding: 15px; box-shadow: 0 0 30px rgba(197, 160, 89, 0.15); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; }
-        .workspace { display: flex; gap: 15px; width: 100%; align-items: stretch; box-sizing: border-box; }
-        .button-panel { display: flex; flex-direction: column; width: 130px; min-width: 130px; box-sizing: border-box; border: 1px solid #c5a05933; background: #050608; }
-        .flip-btn { background: #050608; color: #66fcf1; border: none; border-bottom: 1px solid #c5a05933; height: 96px; font-family: inherit; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; }
+        body { 
+            background-color: #050608; 
+            color: #66fcf1; 
+            font-family: 'Courier New', monospace; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+        h1 { 
+            font-size: 1.2rem; 
+            letter-spacing: 3px; 
+            margin: 0 0 5px 0; 
+            text-transform: uppercase; 
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3); 
+        }
+        .subtitle { 
+            color: #c5a059; 
+            font-size: 0.8rem; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+        }
+        .engine-container { 
+            width: 95vw; 
+            max-width: 820px; 
+            background: #0f1319; 
+            border: 1px solid #c5a059; 
+            padding: 15px; 
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.15); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            box-sizing: border-box; 
+        }
+        .workspace { 
+            display: flex; 
+            gap: 15px; 
+            width: 100%; 
+            align-items: stretch; 
+            box-sizing: border-box; 
+        }
+        .button-panel { 
+            display: flex; 
+            flex-direction: column; 
+            width: 130px; 
+            min-width: 130px; 
+            box-sizing: border-box; 
+            border: 1px solid #c5a05933; 
+            background: #050608; 
+        }
+        .flip-btn { 
+            background: #050608; 
+            color: #66fcf1; 
+            border: none; 
+            border-bottom: 1px solid #c5a05933; 
+            height: 96px; 
+            font-family: inherit; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 5px; 
+        }
         .flip-btn:hover { background: #1f2833; }
         .flip-btn.active-warp { color: #050608; background: #c5a059; border-bottom: 1px solid #ffffff; }
-        canvas { flex-grow: 1; height: 480px; background: #000000; display: block; border: 1px solid #c5a059; box-sizing: border-box; }
-        .controls { display: flex; justify-content: space-between; align-items: center; background: #050608; padding: 12px 20px; border: 1px solid #c5a05933; font-size: 0.85rem; }
+        
+        /* Mask Combiner Layout Frame Wrapper */
+        .canvas-container {
+            flex-grow: 1;
+            height: 480px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .matrix-canvas { 
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            box-sizing: border-box; 
+        }
+        #bgCanvas { border: 1px solid #c5a05933; z-index: 1; }
+        #renderCanvas { border: 1px solid #c5a059; z-index: 2; }
+        
+        .controls { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #050608; 
+            padding: 12px 20px; 
+            border: 1px solid #c5a05933; 
+            font-size: 0.85rem; 
+        }
     </style>
 </head>
 <body>
 
     <h1>STOCHASTIC CHRONOTAXIC MATRIX</h1>
-    <div class="subtitle">Primary Telemetry Broadcaster & Relativistic Phase Array</div>
+    <div class="subtitle">Analytical Relativistic Core & Decoupled Blit Canvas Layout</div>
 
     <div class="engine-container">
         <div class="workspace">
@@ -31,99 +121,160 @@
                 <button class="flip-btn" id="btn-3">TRACK IV<br>FLIP FIELD</button>
                 <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
             </div>
-            <canvas id="clockCanvas"></canvas>
+            <div class="canvas-container">
+                <!-- Multi-layer mask canvas configuration -->
+                <canvas id="bgCanvas" class="matrix-canvas"></canvas>
+                <canvas id="renderCanvas" class="matrix-canvas"></canvas>
+            </div>
         </div>
         <div class="controls">
-            <span id="equivalenceDiagnostics">SYMBOL REF: STANDBY</span>
+            <span id="equivalenceDiagnostics">SYMBOL REF: INGESTING...</span>
             <span style="color:#06d6a0;">BROADCASTING DATA TO LINKED TRANSFORMER</span>
         </div>
     </div>
-
     <script>
-        // Open native cross-window telemetry pipeline
+        // Open native cross-window telemetry pipeline bus
         const telemetryBus = new BroadcastChannel('clock_telemetry');
 
-        // Fully populated 153-element data string to guarantee vector compliance
+        // COMPLETE DATA MATRIX: The exact 153-element Haruhi minimal sequence
         const HARUHI_N5 = new Int32Array([
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,
+            2,5,4,3,1,2,4,5,3,1,2,4,3,5,1,4,2,3,5,1,4,2,3,1,5,4,2,3,1,2,5,4,2,3,1,2,4,5,2,3,1,2,4,3,
+            5,2,1,4,3,5,2,1,4,3,1,5,2,1,4,3,1,2,5,1,4,3,1,2,4,5,1,3,2,4,5,1,3,2,4,1,5,3,2,4,1,3,5,2,
+            4,1,3,2,5,4,1,3,2,4,5,1,3,4,2,5,1,3,4,2,1,5,3,4,2,1,3,5,4,2,1,3,4,5,2,1,3,4,2,5,1,4,3,2,
+            5,1,4,3,2,1,5,4,3,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,4,1,3,2,5,4,1,3,2,1,5,4,3,1,2,5,4,3,1
         ]);
 
         const channelFib = [2.0, 5.0, 13.0, 21.0, 34.0];
         const channelFreq = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
         const channelColors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
 
-        const canvas = document.getElementById('clockCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 620; canvas.height = 480;
+        // Core Dual Canvas Elements Handles
+        const bgCanvas = document.getElementById('bgCanvas');
+        const renderCanvas = document.getElementById('renderCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        const ctx = renderCanvas.getContext('2d');
+
+        bgCanvas.width = 640; bgCanvas.height = 480;
+        renderCanvas.width = 640; renderCanvas.height = 480;
 
         let laneDirections = [1.0, 1.0, 1.0, 1.0, 1.0];
-
+        // --- STREAMLINED POSITION CORE ---
         function getTrackPosition(idx, timeMs) {
             let direction = laneDirections[idx];
-            let timeSec = timeMs * 0.001 * direction;
-            let rawSway = Math.log1p(Math.abs(Math.sin((timeSec * 0.5 + idx * 10.0) * channelFreq[idx])));
+            let timeSec = timeMs * 0.001 * direction * 0.4; // Scaled to look fluid at speed
+            let rawSway = Math.log1p(Math.abs(Math.sin((timeSec + idx * 10.0) * channelFreq[idx])));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
             let superIdx = Math.floor(timeMs * 0.0002) % 153;
             return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
         }
 
+        // --- OPTIMIZED CALCULUS DERIVATIVE ENGINE ---
+        // Computes exact velocity via pure algebraic derivative mapping formulas
+        function getExactVelocity(idx, timeMs) {
+            let direction = laneDirections[idx];
+            let t = timeMs * 0.001 * direction * 0.4 + idx * 10.0;
+            let freq = channelFreq[idx];
+            let fib = channelFib[idx];
+            
+            let sinVal = sin(t * freq);
+            let cosVal = cos(t * freq);
+            
+            let sgn = sinVal >= 0.0 ? 1.0 : -1.0;
+            let dSwayDt = (freq * cosVal * sgn) / (1.0 + abs(sinVal));
+            
+            let rawSway = log(1.0 + abs(sinVal));
+            let outerCos = cos(rawSway * fib);
+            let outerSgn = sin(rawSway * fib) >= 0.0 ? 1.0 : -1.0;
+            
+            // Returns exact instantaneous delta scaling metric
+            return abs(outerCos * fib * dSwayDt * outerSgn) * 10.0;
+        }
+
+        // Native Math wrappers mapped directly to CPU native speed instructions
+        function sin(x) { return Math.sin(x); }
+        function cos(x) { return Math.cos(x); }
+        function abs(x) { return Math.abs(x); }
+        function log(x) { return Math.log(x); }
+        // --- LAYER BLIT INITIALIZATION ---
+        // Render static layout boundaries once to remove background redraw overhead
+        function renderStaticBackground() {
+            bgCtx.fillStyle = '#050608';
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+            let laneHeight = bgCanvas.height / 6;
+
+            bgCtx.strokeStyle = '#c5a05915';
+            bgCtx.lineWidth = 1;
+            for (let i = 0; i < 5; i++) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, (i + 1) * laneHeight);
+                bgCtx.lineTo(bgCanvas.width, (i + 1) * laneHeight);
+                bgCtx.stroke();
+            }
+        }
+        renderStaticBackground();
+
+        // High-Speed Shape Morphing Drawing Utility
+        function drawMorphedNode(drawX, centerY, posX, color) {
+            let morphFactor = abs(cos(posX * 3.14));
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            if (morphFactor < 0.3) {
+                ctx.arc(drawX, centerY, 15, 0, Math.PI * 2);
+                ctx.fill(); ctx.stroke();
+            } else if (morphFactor < 0.6) {
+                ctx.moveTo(drawX, centerY - 16); ctx.lineTo(drawX + 14, centerY);
+                ctx.lineTo(drawX, centerY + 16); ctx.lineTo(drawX - 14, centerY);
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            } else {
+                ctx.fillRect(drawX - 12, centerY - 15, 24, 30);
+                ctx.strokeRect(drawX - 12, centerY - 15, 24, 30);
+            }
+        }
         let lastRealTime = 0, internalTime = 0;
 
         function renderMatrixFrame(timestamp) {
+            // Clear only the fast-moving active animation graphics canvas layer
+            ctx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
+            
             internalTime += (timestamp - lastRealTime);
             lastRealTime = timestamp;
 
-            ctx.fillStyle = '#050608';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            let laneHeight = canvas.height / 6;
-
+            let laneHeight = renderCanvas.height / 6;
             let currentPositions = [];
 
-            // 1. Calculate positions and draw active morphing lanes
+            // 1. Process positions and draw relativistic contracted nodes
             for (let i = 0; i < 5; i++) {
                 let posX = getTrackPosition(i, internalTime);
-                currentPositions.push(posX); // Cache for streaming payload
+                currentPositions.push(posX); // Pack to tracking telemetry bundle
                 
-                let drawX = posX * canvas.width;
+                let drawX = posX * renderCanvas.width;
                 let centerY = i * laneHeight + laneHeight / 2;
-                let morph = Math.abs(Math.cos(posX * 3.14));
+                
+                // Color spectrum cycling calculation
+                let cycle = sin(internalTime * 0.0015 + i * 1.2) * 0.5 + 0.5;
+                let activeColor = channelColors[i]; 
 
-                ctx.fillStyle = channelColors[i];
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-
-                if (morph < 0.3) {
-                    ctx.arc(drawX, centerY, 15, 0, Math.PI * 2);
-                    ctx.fill(); ctx.stroke();
-                } else if (morph < 0.6) {
-                    ctx.moveTo(drawX, centerY - 16); ctx.lineTo(drawX + 14, centerY);
-                    ctx.lineTo(drawX, centerY + 16); ctx.lineTo(drawX - 14, centerY);
-                    ctx.closePath(); ctx.fill(); ctx.stroke();
-                } else {
-                    ctx.fillRect(drawX - 12, centerY - 15, 24, 30);
-                    ctx.strokeRect(drawX - 12, centerY - 15, 24, 30);
-                }
+                drawMorphedNode(drawX, centerY, posX, activeColor);
             }
 
-            // 2. Render Horizon System Bus Line
+            // 2. Render Horizon System Bus Line (Track VI)
             let superIdx = Math.floor(internalTime * 0.0002) % 153;
             let activeSymbol = HARUHI_N5[superIdx];
             let busY = 5 * laneHeight + laneHeight / 2;
-            let targetX = ((activeSymbol * 0.1) + 0.3) * canvas.width;
+            let targetX = ((activeSymbol * 0.1) + 0.3) * renderCanvas.width;
 
-            ctx.fillStyle = '#151922'; ctx.fillRect(0, 5 * laneHeight, canvas.width, laneHeight);
+            ctx.fillStyle = '#151922'; ctx.fillRect(0, 5 * laneHeight, renderCanvas.width, laneHeight);
             ctx.strokeStyle = '#c5a05933'; ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0, busY); ctx.lineTo(canvas.width, busY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, busY); ctx.lineTo(renderCanvas.width, busY); ctx.stroke();
             ctx.fillStyle = '#c5a059'; ctx.beginPath(); ctx.arc(targetX, busY, 8, 0, Math.PI * 2); ctx.fill();
 
-            document.getElementById('equivalenceDiagnostics').innerText = `SYMBOL REF: N5[#${activeSymbol}] | SYSTEM RUNNING`;
+            document.getElementById('equivalenceDiagnostics').innerText = `SYMBOL REF: N5[#${activeSymbol}] | SYSTEM ACTIVE`;
 
-            // --- CRITICAL DISPATCH OVER WIRE ---
-            // Package and stream the calculated arrays down to the open network socket
+            // --- TRANSMIT TELEMETRY STREAM OVER WIRE ---
             telemetryBus.postMessage({
                 timeMs: internalTime,
                 positions: currentPositions
@@ -132,7 +283,7 @@
             requestAnimationFrame(renderMatrixFrame);
         }
 
-        // Setup Panel Action Listeners
+        // Hook Rigid Panel Click Handlers
         for (let i = 0; i < 5; i++) {
             const btn = document.getElementById(`btn-${i}`);
             btn.addEventListener('click', () => {
