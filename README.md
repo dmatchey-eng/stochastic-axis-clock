@@ -6,11 +6,7 @@ This environment serves as a unified relativistic demo library, mapping how inde
 
 ---
 ![Stochastic Chronotaxic Drift Matrix Map](phase_space_chart.svg)
----
-# Stochastic Axis Clock
-<p align="center">
-  <img src="phase_space_chart.svg" width="800" alt="Stochastic Chronotaxic Drift Matrix Map" />
-</p>
+
 
 ## 📂 What's Here
 
