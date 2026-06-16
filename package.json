@@ -5,6 +5,8 @@
   "description": "Multi-axis concurrent clock metrics engine",
   "main": "clock_compare.js",
   "scripts": {
-    "start": "node clock_compare.js"
+    "start": "node clock_compare.js",
+    "diagnose": "node diagnose_rtc.js",
+    "combinatorial": "node combinatorial_core.js"
   }
 }
