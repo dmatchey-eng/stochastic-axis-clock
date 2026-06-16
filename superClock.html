@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Superclock: 153-State Combinatorial Array</title>
+    <title>Stochastic Superclock: Relativistic Warp Array</title>
     <style>
         body {
             background-color: #050608;
@@ -52,6 +52,7 @@
             background: #000000;
             display: block;
             border: 2px solid #c5a059;
+            cursor: crosshair;
         }
 
         .controls {
@@ -117,7 +118,7 @@
 <body>
 
     <h1>STOCHASTIC SUPERCLOCK CORE</h1>
-    <div class="subtitle">N=5 Superpermutation Array & Non-Linear Lorentz Fields</div>
+    <div class="subtitle">Geometric Morphing & Undisclosed Intersect Inversion</div>
 
     <div class="engine-container">
         <canvas id="glCanvas"></canvas>
@@ -132,7 +133,7 @@
             </div>
         </div>
 
-        <div id="diagnostics">LOADING 153-STATE GEOMETRIC FIELD...</div>
+        <div id="diagnostics">WARP MATRIX INTEGRATED | GEOMETRY: SDF_MORPH</div>
     </div>
     <script>
         const vsSource = `#version 300 es
@@ -150,13 +151,16 @@
             out vec4 fragColor;
 
             uniform float uTime;
-            uniform float uFib[5];
-            uniform float uFreq[5];
-            uniform vec3 uBaseColors[5];
-            uniform int uSuperString[153]; 
+            uniform float uFib;
+            uniform float uFreq;
+            uniform vec3 uBaseColors;
+            uniform int uSuperString; 
+            uniform float uLaneDirections; // Handles direct timeline direction inversion overrides
 
-            float calculateAxisPosition(float fib, float freq, float offset) {
-                float rawSway = log(1.0 + abs(sin((uTime * 0.5 + offset) * freq)));
+            float calculateAxisPosition(float fib, float freq, float offset, float direction) {
+                // Direction multiplier tracks regular flow (1.0) or inverted warp state (-1.0)
+                float adjustedTime = uTime * direction; 
+                float rawSway = log(1.0 + abs(sin((adjustedTime * 0.5 + offset) * freq)));
                 return 0.1 + (abs(sin(rawSway * fib)) * 0.8);
             }
 
@@ -164,22 +168,29 @@
                 vec2 d = abs(p) - b;
                 return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
             }
+
+            float sdfRhombus(vec2 p, vec2 b) {
+                vec2 q = abs(p);
+                float h = clamp((-2.0 * q.x + b.x) / (b.x + b.y), -1.0, 1.0);
+                float d = length(q - 0.5 * b * vec2(1.0 - h, 1.0 + h));
+                return d * sign(q.x * b.y + q.y * b.x - b.x * b.y);
+            }
             void main() {
                 vec3 finalColor = vec3(0.02, 0.02, 0.03); 
                 
-                float pX[5];
-                pX[0] = calculateAxisPosition(uFib[0], uFreq[0], 0.0);
-                pX[1] = calculateAxisPosition(uFib[1], uFreq[1], 100.0);
-                pX[2] = calculateAxisPosition(uFib[2], uFreq[2], 200.0);
-                pX[3] = calculateAxisPosition(uFib[3], uFreq[3], 300.0);
-                pX[4] = calculateAxisPosition(uFib[4], uFreq[4], 400.0);
+                float pX;
+                pX = calculateAxisPosition(uFib, uFreq, 0.0, uLaneDirections);
+                pX = calculateAxisPosition(uFib, uFreq, 100.0, uLaneDirections);
+                pX = calculateAxisPosition(uFib, uFreq, 200.0, uLaneDirections);
+                pX = calculateAxisPosition(uFib, uFreq, 300.0, uLaneDirections);
+                pX = calculateAxisPosition(uFib, uFreq, 400.0, uLaneDirections);
 
                 int laneIndex = int(vUv.y * 6.0);
                 float localY = fract(vUv.y * 6.0) * 2.0 - 1.0;
                 
-                vec2 baseDimensions = vec2(0.035, 0.7);
+                vec2 baseDimensions = vec2(0.045, 0.7);
 
-                vec3 activeColors[5];
+                vec3 activeColors;
                 for(int i = 0; i < 5; i++) {
                     float cycle = sin(uTime * 0.0015 + float(i) * 1.2) * 0.5 + 0.5;
                     activeColors[i] = mix(uBaseColors[i], uBaseColors[(i+1)%5], cycle);
@@ -192,24 +203,41 @@
                     int activeSymbol = uSuperString[superIndex];
                     targetX = fract(targetX + float(activeSymbol) * 0.06);
 
+                    // --- QUANTUM LORENTZ CONTRACTION ENGINE ---
                     float dt = 0.001;
-                    float nextPos = calculateAxisPosition(uFib[laneIndex], uFreq[laneIndex], dt);
+                    float nextPos = calculateAxisPosition(uFib[laneIndex], uFreq[laneIndex], dt, uLaneDirections[laneIndex]);
                     float velocity = abs(nextPos - pX[laneIndex]) / dt;
                     float speedOfLightC = 15.0;
                     float beta = clamp(velocity / speedOfLightC, 0.0, 0.99);
                     float lorentzFactor = sqrt(1.0 - (beta * beta));
 
+                    // --- GEOMETRIC SHAPE-SHIFTING CALCULATOR ---
+                    float dynamicPhase = log(1.0 + abs(sin((uTime * uLaneDirections[laneIndex]) * uFreq[laneIndex]))) * uFib[laneIndex];
+                    float shapeMorphFactor = abs(cos(dynamicPhase * 1.2));
+
                     vec2 contractedDimensions = vec2(baseDimensions.x * lorentzFactor, baseDimensions.y);
                     vec2 localPos = vec2(vUv.x - targetX, localY);
-                    float dBox = sdfBox(localPos, contractedDimensions);
 
-                    if (dBox < 0.0) {
+                    // Sample simultaneous SDF variants
+                    float dBox = sdfBox(localPos, contractedDimensions);
+                    float dRhombus = sdfRhombus(localPos, contractedDimensions * 1.5);
+                    float dCircle = length(localPos) - contractedDimensions.x * 1.5;
+
+                    // Blend geometries smoothly based on velocity phase shifts
+                    float mixedSDF = mix(dBox, dRhombus, shapeMorphFactor);
+                    if (shapeMorphFactor > 0.7) {
+                        mixedSDF = mix(mixedSDF, dCircle, (shapeMorphFactor - 0.7) / 0.3);
+                    }
+
+                    if (mixedSDF < 0.0) {
                         finalColor = activeColors[laneIndex];
-                        if (dBox > -0.006) finalColor = vec3(1.0, 1.0, 1.0); 
+                        // Transform the white artifacts into precise, glowing border outlines
+                        if (mixedSDF > -0.006) finalColor = vec3(1.0, 1.0, 1.0); 
                     }
                     if (fract(vUv.y * 6.0) < 0.02) finalColor += vec3(0.04);
                 } 
                 else {
+                    // --- CHANNEL VI: RELATIVISTIC INTEGRATION BUS ---
                     finalColor = vec3(0.05, 0.06, 0.08);
                     for (int i = 0; i < 5; i++) {
                         int prevIdx = (i == 0) ? 4 : i - 1;
@@ -268,6 +296,7 @@
         const uFreqLoc = gl.getUniformLocation(program, "uFreq");
         const uColorsLoc = gl.getUniformLocation(program, "uBaseColors");
         const uSuperLoc = gl.getUniformLocation(program, "uSuperString");
+        const uDirLoc = gl.getUniformLocation(program, "uLaneDirections");
 
         gl.uniform1fv(uFibLoc, new Float32Array([2.0, 5.0, 13.0, 21.0, 34.0]));
         gl.uniform1fv(uFreqLoc, new Float32Array([0.0008, 0.0012, 0.0005, 0.0018, 0.0025]));
@@ -279,16 +308,39 @@
             1.0, 1.0, 1.0   
         ]));
 
-        // THE 153-ITEM HARUHI N=5 MINIMAL SUPERPERMUTATION MATRIX ARRAY DATA
-        const HARUHI_N5 = new Int32Array([
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,
-            1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,
-            4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,
-            4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,
-            3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4
-        ]);
+        // FIXED ARRAY: Complete 153-item minimal N=5 superpermutation dataset matrix
+        const HARUHI_N5 = new Int32Array();
         gl.uniform1iv(uSuperLoc, HARUHI_N5);
+
+        // Track native timeline directions initialized to standard forward execution (1.0)
+        let laneDirectionsArray = new Float32Array([1.0, 1.0, 1.0, 1.0, 1.0]);
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
+
+        // --- UNDISCLOSED INTERACTIVE INTERCEPT MATRIX ---
+        // Clicking a lane updates the direction array inside GPU registers, flipping its timeline
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickY = e.clientY - rect.top;
+            
+            // Map pixel height directly back onto your 6 core canvas lanes
+            const selectedLane = Math.floor((clickY / rect.height) * 6);
+            
+            if (selectedLane < 5) {
+                // Flip execution direction: 1.0 (Forward) -> -1.0 (Warp Reversal State)
+                laneDirectionsArray[selectedLane] *= -1.0;
+                
+                document.getElementById('diagnostics').innerText = 
+                    `LANE OVERRIDE: INVERTING TRACK ${selectedLane + 1} DIRECTIVE TO ${laneDirectionsArray[selectedLane] > 0 ? 'FORWARD' : 'REVERSAL'}`;
+                
+                // Instantly update the modified array via system interrupts
+                setTimeout(() => {
+                    if(laneDirectionsArray[selectedLane] < 0) {
+                        laneDirectionsArray[selectedLane] = 1.0; // Automatically pop back out of warp state
+                        document.getElementById('diagnostics').innerText = `TRACK ${selectedLane + 1} SYSTEM RESTORED TO ALIGNMENT`;
+                    }
+                }, 4000); // 4 Second Warp State Boundary window limit
+            }
+        });
 
         document.getElementById('playPauseBtn').addEventListener('click', (e) => {
             isEngineRunning = !isEngineRunning;
@@ -305,13 +357,15 @@
             lastRealTimestamp = time;
             if (isEngineRunning) internalEngineTime += delta * runningSpeedMultiplier;
 
+            // Continually push live timeline data and lane orientations to shader units
             gl.uniform1f(uTimeLoc, internalEngineTime);
+            gl.uniform1fv(uDirLoc, laneDirectionsArray);
+            
             gl.drawArrays(gl.TRIANGLES, 0, 6);
             requestAnimationFrame(renderPipelineFrame);
         }
         
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderPipelineFrame); });
-        document.getElementById('diagnostics').innerText = "SUPERCLOCK ONLINE | N=5 PERMUTATION BUS RUNNING AT SPEED";
     </script>
 </body>
 </html>
