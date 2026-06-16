@@ -40,11 +40,11 @@ jobs:
         kill $PID_COMP
 
     - name: 5. Compile Verified Vector Layout Map
-      # FIXED: Swapped buggy inline node executions out for our clean standalone script file
+      # Executes the standalone file under clean ES module parameters
       run: node make_chart.js
 
     - name: 6. Parse and Render Vector Data to Standard PNG Format
-      # Ingests the pristine SVG root tree and converts it to a standard image file
+      # Converts the newly populated, pristine XML chart into a clean image file
       run: rsvg-convert -f png -w 800 -h 500 phase_space_chart.svg -o phase_space_chart.png
 
     - name: 7. Push Rasterized Artifacts Straight to Code Tree
