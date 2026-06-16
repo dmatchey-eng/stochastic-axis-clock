@@ -5,7 +5,7 @@ A repository and informational blueprint for analyzing non-linear temporal model
 This environment serves as a unified relativistic demo library, mapping how independent, asynchronous threads warp, deform, and step through complex combinatorial state spaces.
 
 ---
-
+![Stochastic Chronotaxic Drift Matrix Map](phase_space_chart.svg)
 ## 📂 Unified Relativistic Demo Library Architecture
 
 ```text
