@@ -2,13 +2,6 @@
 
 An enterprise-grade, high-performance WebGL2 visual math engine and concurrent Node.js diagnostics pipeline. The project demonstrates low-level synchronization modeling by applying a **Truncated Fibonacci Progression** to the **Logarithmic Sway** of parallel execution tracks along a single temporal axis.
 
-<!-- UI PREVIEW RECOVERY ANCHOR -->
-<p align="center">
-  <img src="https://giphy.com" width="100%" alt="WebGL2 Engine Frame Preview" />
-  <br>
-  <em>Figure 1.0: Real-time WebGL2 geometric Signed Distance Field (SDF) morphing loop under continuous execution phase shifting.</em>
-</p>
-
 ## 🔬 System Architecture & Mathematical Blueprint
 
 The core architecture treats discrete timing loops as an immutable database stream. Four isolated worker channels map their respective horizontal processing positions via a dynamic sine wave wrapped inside a natural logarithm, scaled exponentially by assigned Fibonacci coefficients:
