@@ -100,6 +100,17 @@ jobs:
         echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
         echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
+    - name: 6.5 Commit Generated Phase Map Straight to Repository Tree
+      # This step physically pushes the file into your branch so relative markdown can load it
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@://github.com'
+        git add phase_space_chart.svg
+        # Force a safe commit, using || true to prevent pipeline failure if the file layout hasn't altered
+        git commit -m "data: update stochastic phase space chart mapping matrix" || true
+        git push
+
+
     - name: 7. Package Relativistic Assets and Push GitHub Release
       uses: softprops/action-gh-release@v2
       with:
