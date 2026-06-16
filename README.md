@@ -6,6 +6,7 @@ This environment serves as a unified relativistic demo library, mapping how inde
 
 ---
 ![Stochastic Chronotaxic Drift Matrix Map](phase_space_chart.svg)
+
 ## 📂 Unified Relativistic Demo Library Architecture
 
 ```text
