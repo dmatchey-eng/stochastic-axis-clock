@@ -7,8 +7,9 @@ This environment serves as a unified relativistic demo library, mapping how inde
 ---
 
 <p align="center">
-  ![Stochastic Chronotaxic Drift Matrix Map](phase_space_chart.png)
+  <img src="phase_space_chart.png" width="800" alt="Stochastic Chronotaxic Drift Matrix Map" />
 </p>
+
 
 
 
