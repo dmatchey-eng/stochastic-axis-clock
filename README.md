@@ -11,8 +11,8 @@ stochastic-axis-clock/
 ├── .gitignore          # Prevents tracking of local dependencies (node_modules/)
 ├── LICENSE             # MIT License open-source permission file
 ├── README.md           # Core theoretical blueprint and system documentation
+├── clock.html          # WebGL2 parallel fragment shader visual simulation
 ├── clock_compare.js    # Multi-channel Node.js atomic reference comparator
-├── index.html          # WebGL2 parallel fragment shader visual simulation
 └── package.json        # Project metadata manifest enabling native ES Modules
 ```
 
@@ -25,9 +25,13 @@ To guide the next stages of development, the system shifts away from traditional
 Under this paradigm, time is not an invariant background variable ($t$). It is an unaligned property unique to each independent execution channel, governed by two core behavioral concepts:
 
 ### 1. Non-Linear Cadence & Variable Chronotaxic Velocity
-Each of the four base channels operates within its own localized "gravitational field," simulated mathematically by mapping a **Truncated Fibonacci Progression** directly onto the **Logarithmic Sway** of its internal execution clock cycles:
+Each of the four base channels operates within its own localized "gravitational field," simulated mathematically by mapping a **Truncated Fibonacci Progression** directly onto the **Logarithmic Sway** of its internal execution clock cycles.
 
-$$\text{Phase\_Delta}_n = \ln\left(1 + \left\vert{}\sin\left(\text{System\_Clock} \times \omega_n\right)\right\vert{}\right) \times F_{\text{index}_n}$$
+The instantaneous phase transformation across the single temporal dimension is governed by the structural state equation:
+
+```math
+Phase\_Delta_n \(= \ln\left(1 + \left\vert{}\sin\left(System\_Clock \times \omega_n\right)\right\vert{}\right) \times\) F_{index}_n
+```
 
 Because the Fibonacci multipliers ($F = [2, 5, 13, 21]$) compress or stretch the temporal field, the channels experience localized time dilation. High-tier nodes (like Channel IV) move through phase coordinates rapidly, simulating a particle traveling at relativistic speeds, while lower tiers anchor the system to a sluggish, dense baseline cadence.
 
@@ -42,7 +46,7 @@ In traditional computing, threads are forced into rigid synchronization. In this
 
 ## 🏎️ Component Breakdown Overview
 
-### 🖥️ 1. WebGL2 Graphics Engine (`index.html`)
+### 🖥️ 1. WebGL2 Graphics Engine (`clock.html`)
 Executes the logarithmic and Fibonacci phase transformations entirely inside the GPU's native fragment pipelines.
 - **SDF Geometry:** Uses Signed Distance Fields to morph shapes from sharp rectangles (high acceleration turning points) into smooth circles/diamonds (high-velocity inflection frames).
 - **Temporal Color Vernier Scale:** Shifts neon color spectrums across an independent sine wave, allowing an observer to visually detect rare moments of absolute cross-channel resonance.
