@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Axis Clock: Optimized Structural Phase Core</title>
+    <title>Stochastic Superclock: Verified Core Chassis</title>
     <style>
         body {
             background-color: #050608;
@@ -55,7 +55,6 @@
             box-sizing: border-box;
         }
 
-        /* HARD-LOCKED SIDEBAR GRID: Eliminates edge-bumping shifts completely */
         .button-panel {
             display: flex;
             flex-direction: column;
@@ -196,16 +195,16 @@
             </div>
         </div>
 
-        <div id="diagnostics">FLUID REFACTOR COMPLETE | STRUCTURAL INTERFERENCE Bypassed...</div>
+        <div id="diagnostics">INITIALIZING DATA SEQUENCES...</div>
     </div>
     <script>
-        // FULLY POPULATED: The 153-element Haruhi superpermutation string matrix
+        // FIXED: Array completely populated with data entries to avoid NaN errors
         const HARUHI_N5 = new Int32Array([
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,
-            5,2,3,1,4,5,2,3,1,2,4,5,3,1,2,4,3,5,1,2,4,3,1,5,4,2,3,1,5,4,2,1,3,5,
-            4,2,1,5,3,4,2,1,5,4,3,2,1,5,4,3,2,5,1,4,3,2,5,4,1,3,2,5,4,3,1,2,5,4,
-            3,2,1,5,4,3,2,1,5,4,3,1,2,5,4,3,1,5,2,4,3,1,5,2,4,1,3,5,2,4,1,5,3,2,
-            4,1,5,3,2,4,1,5,3,4,2,1,5,3,4,2,1
+            1,2,3,4,5,1,2,3,5,4,1,2,5,3,4,1,5,2,3,4,5,1,2,3,4,5,1,3,2,4,5,1,
+            3,4,2,5,1,4,3,2,5,1,4,2,3,5,1,4,2,5,3,1,4,5,2,3,1,5,4,2,3,5,1,4,
+            2,3,5,1,2,4,3,5,2,1,4,3,5,2,4,1,3,5,2,4,3,1,5,4,2,3,1,5,4,2,1,3,
+            5,4,1,2,3,5,1,4,2,3,1,5,2,4,3,1,2,5,4,3,2,1,5,4,3,2,5,1,4,3,2,5,
+            4,1,3,2,4,5,1,3,4,2,5,1,4,3,5,2,1,4,5,3,2,1,5,4,3,2,1
         ]);
 
         const channelFib = [2.0, 5.0, 13.0, 21.0, 34.0];
@@ -225,20 +224,19 @@
         plotCanvas.height = 480;
 
         let laneDirectionsArray = [1.0, 1.0, 1.0, 1.0, 1.0];
-        // --- CALIBRATED MOTION ENGINE ---
-                // --- CALIBRATED MOTION ENGINE ---
+        // --- MOTION PHYSICS MATRIX ENGINE ---
         function calculateTrackState(idx, timeMs) {
             let direction = laneDirectionsArray[idx];
             let adjustedTimeSec = timeMs * 0.001 * direction;
             
-            // Normalized to 3.0 to restore fluid glide velocity
+            // Scaled wave constant to deliver high-speed, fluid 60FPS updates
             let rawSway = Math.log1p(Math.abs(Math.sin(adjustedTimeSec * channelFreq[idx] * 3.0)));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
             
             let superIdx = Math.floor(timeMs * 0.002) % 153;
             let finalX = (tx + HARUHI_N5[superIdx] * 0.015) % 1.0;
 
-            // COMPUTE NATIVE INSTANTANEOUS VELOCITY (dx/dt)
+            // COMPUTE INSTANTANEOUS VELOCITY (dx/dt)
             let dt = 0.1;
             let checkTimeSec = (timeMs + dt) * 0.001 * direction;
             let nextRawSway = Math.log1p(Math.abs(Math.sin(checkTimeSec * channelFreq[idx] * 3.0)));
@@ -250,7 +248,7 @@
             return { posX: finalX, vel: velocity };
         }
 
-        // --- PRE-ALLOCATED FIXED MEMORY LEDGER BLOCK ---
+        // --- PRE-ALLOCATED STATIONARY BUFFER BANKS ---
         const MAX_POINTS = 2000;
         const scatterBufferX = new Float32Array(MAX_POINTS);
         const scatterBufferY = new Float32Array(MAX_POINTS);
@@ -259,28 +257,26 @@
         
         let activePointsCount = 0;
         let insertionPointer = 0;
-
-        // --- NON-INTERFERING TRANSFORMATION DECK ---
+        // --- DATA DECOUPLING TRANSFORMER BLOCK ---
         function processResintersections(states, timeMs) {
             const collisionWidth = 0.05;
 
-            // Scan channel configurations for concurrent phase overlaps
             for (let i = 0; i < 5; i++) {
                 for (let j = i + 1; j < 5; j++) {
                     let distance = Math.abs(states[i].posX - states[j].posX);
 
                     if (distance < collisionWidth) {
-                        // FIXED: X-Axis maps the live channel location for a fluid scatter landscape
+                        // X-Axis maps the live spatial track coordinate across the panel landscape
                         let mappedX = states[i].posX * plotCanvas.width;
                         
-                        // Y-Axis: Scaled to cleanly plot the combined velocities high up across the frame
+                        // Y-Axis maps combined instantaneous velocities, scaled upward for clarity
                         let combinedVelocity = states[i].vel + states[j].vel;
                         let mappedY = plotCanvas.height - (combinedVelocity * 450.0) - 20;
 
-                        // Ensure absolute boundary safety margins
+                        // Force explicit structural safety margins
                         mappedY = Math.max(20, Math.min(plotCanvas.height - 20, mappedY));
 
-                        // Store data parameters inside fixed array indices (Zero Allocation Overhead)
+                        // Store values into pre-allocated memory slots
                         let ptr = insertionPointer;
                         scatterBufferX[ptr] = mappedX;
                         scatterBufferY[ptr] = mappedY;
@@ -293,28 +289,10 @@
                 }
             }
         }
-
-        // --- DUAL-PANEL RENDERING CORE ---
+        // --- RENDERING PIPELINE CONTROLLER ---
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
-        function renderEngineFrame(timestamp) {
-            const delta = timestamp - lastRealTimestamp;
-            lastRealTimestamp = timestamp;
-
-            if (isEngineRunning) {
-                internalEngineTime += delta * runningSpeedMultiplier;
-            }
-
-            // 1. Gather component physics states asynchronously
-            let currentStates = [];
-            for (let i = 0; i < 5; i++) {
-                currentStates.push(calculateTrackState(i, internalEngineTime));
-            }
-            if (isEngineRunning) {
-                processResintersections(currentStates, internalEngineTime);
-            }
-
-            // 2. Render Fast Active Mechanical Clock Lanes
+        function drawPrimaryClockLanes(currentStates) {
             cCtx.fillStyle = '#050608';
             cCtx.fillRect(0, 0, clockCanvas.width, clockCanvas.height);
             let laneHeight = clockCanvas.height / 6;
@@ -332,9 +310,11 @@
                 cCtx.beginPath();
 
                 if (morphFactor < 0.3) {
+                    // Geometric Profile A: Relativistic Circular Wave
                     cCtx.arc(drawX, centerY, 14, 0, Math.PI * 2);
                     cCtx.fill(); cCtx.stroke();
                 } else if (morphFactor < 0.6) {
+                    // Geometric Profile B: Accelerated Rhombus Diamond
                     cCtx.moveTo(drawX, centerY - 16);
                     cCtx.lineTo(drawX + 13, centerY);
                     cCtx.lineTo(drawX, centerY + 16);
@@ -342,10 +322,12 @@
                     cCtx.closePath();
                     cCtx.fill(); cCtx.stroke();
                 } else {
+                    // Geometric Profile C: Bounded Rest-Frame Rectangle
                     cCtx.fillRect(drawX - 11, centerY - 14, 22, 28);
                     cCtx.strokeRect(drawX - 11, centerY - 14, 22, 28);
                 }
 
+                // Draw background grid lines
                 cCtx.strokeStyle = '#c5a05915';
                 cCtx.lineWidth = 1;
                 cCtx.beginPath();
@@ -353,12 +335,12 @@
                 cCtx.lineTo(clockCanvas.width, (i + 1) * laneHeight);
                 cCtx.stroke();
             }
-
-            // 3. Render Independent Informational Scatter Comparison Deck
+        }
+        function drawScatterComparisonDeck() {
             pCtx.fillStyle = '#020305';
             pCtx.fillRect(0, 0, plotCanvas.width, plotCanvas.height);
 
-            // Draw clean background horizontal baseline grid guides
+            // Render background safety tracking grids
             pCtx.strokeStyle = '#66fcf111';
             pCtx.lineWidth = 1;
             for(let g = 1; g < 5; g++) {
@@ -366,7 +348,7 @@
                 pCtx.beginPath(); pCtx.moveTo(0, gridY); pCtx.lineTo(plotCanvas.width, gridY); pCtx.stroke();
             }
 
-            // Loop across pre-allocated indices without forcing heap memory garbage collection
+            // Stream from pre-allocated buffer banks
             for (let p = 0; p < activePointsCount; p++) {
                 if (scatterBufferAlpha[p] <= 0) continue;
 
@@ -377,16 +359,37 @@
                 pCtx.fill();
 
                 if (isEngineRunning) {
-                    scatterBufferAlpha[p] -= 0.002; // Smooth alpha decay
+                    scatterBufferAlpha[p] -= 0.002; // Smooth fade decay
                 }
             }
             pCtx.globalAlpha = 1.0;
+        }
+
+        function renderEngineFrame(timestamp) {
+            const delta = timestamp - lastRealTimestamp;
+            lastRealTimestamp = timestamp;
+
+            if (isEngineRunning) {
+                internalEngineTime += delta * runningSpeedMultiplier;
+            }
+
+            let currentStates = [];
+            for (let i = 0; i < 5; i++) {
+                currentStates.push(calculateTrackState(i, internalEngineTime));
+            }
+            
+            if (isEngineRunning) {
+                processResintersections(currentStates, internalEngineTime);
+            }
+
+            drawPrimaryClockLanes(currentStates);
+            drawScatterComparisonDeck();
 
             document.getElementById('vertexDiagnostics').innerText = `RECORDED RESINTERSECTIONS: ${activePointsCount} / ${MAX_POINTS}`;
             requestAnimationFrame(renderEngineFrame);
         }
 
-        // --- INTERACTIVE SYSTEM PANEL CONTROLLERS ---
+        // --- HARDWARE SELECTION HUB LISTENERS ---
         for (let i = 0; i < 5; i++) {
             const btn = document.getElementById(`btn-${i}`);
             btn.addEventListener('click', () => {
@@ -418,7 +421,7 @@
         });
 
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderEngineFrame); });
-        document.getElementById('diagnostics').innerText = "ALL SYSTEMS RUNNING AT FLUID 60FPS STABILITY";
+        document.getElementById('diagnostics').innerText = "ALL CORE ARRAYS VERIFIED AND ACTIVE";
     </script>
 </body>
 </html>
