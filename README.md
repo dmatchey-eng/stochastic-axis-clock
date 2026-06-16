@@ -30,8 +30,7 @@ Each of the four base channels operates within its own localized "gravitational 
 
 The instantaneous phase transformation across the single temporal dimension is governed by the structural state equation:
 
-```math
-\(\text{Phase\_Delta}_n = \ln\left(1 + \left\vert{}\sin\left(\text{System\_Clock} \times \omega_n\right)\right\vert{}\right) \times F_{\{\text{index}_n\}} \%\%\)MAGIT_PARSER_PROTECT%%```
+`Phase_Delta[n] = ln(1.0 + abs(sin(System_Clock * Wave_Freq[n]))) * Truncated_Fib[index_n]`
 
 Because the Fibonacci multipliers ($F = [2, 5, 13, 21]$) compress or stretch the temporal field, the channels experience localized time dilation. High-tier nodes (like Channel IV) move through phase coordinates rapidly, simulating a particle traveling at relativistic speeds, while lower tiers anchor the system to a sluggish, dense baseline cadence.
 
@@ -39,7 +38,7 @@ Because the Fibonacci multipliers ($F = [2, 5, 13, 21]$) compress or stretch the
 In traditional computing, threads are forced into rigid synchronization. In this stochastic architecture, the system relies on **Incommensurate Ratios**—frequencies that cannot cleanly divide into one another. 
 
 - This ensures that the tracks are perpetually out of phase, never settling into a predictable, repeating cycle.
-- **Channel V (The Matrix Intersect Core)** acts as a space-time fabric tracker. It continuously calculates the directional velocity deltas between the independent channels, instantiating "inverted reflection paths" that travel backward against the flow of the parent channel's timeline.
+- **Channel V (The Matrix Intersect Core)** acts as a space-time fabric tracker. It continuously calculates the directional velocity deltas between the independent channels, instantiating "inverted reflection paths" that travel backward against the flow of the parent channel's timeline from the starting point of the block before it, looping cleanly from 4 back to 1.
 - The resulting visual geometry (morphing from rectangles to circles via Signed Distance Fields) provides a raw, readable translation of spatial compression and temporal warping occurring natively across the processor's cores.
 
 ---
