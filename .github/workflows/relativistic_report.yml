@@ -20,7 +20,11 @@ jobs:
       with:
         node-version: 20
 
-    - name: 3. Execute Host Analytical Profilers
+    - name: 3. Provision Isolated Node Dependencies
+      # Installs sharp within the workspace directory to keep the engine fully decoupled from OS limits
+      run: npm install sharp
+
+    - name: 4. Execute Host Analytical Profilers
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
         node combinatorial_core.js >> analytical_report.log &
@@ -34,15 +38,9 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 4. Compile Dynamic Vector Layout Map
-      # Executes the standalone file to compute positions cleanly and prevent NaN errors
+    - name: 5. Execute Self-Contained Simulation & Image Conversion
+      # Computes the math vectors and generates both the SVG and PNG formats purely in JavaScript
       run: node generate_matrix.js
-
-    - name: 5. Parse and Render Vector Data to Standard PNG Format
-      # FIXED: Swapped 'gm' for the standard 'convert' command, pre-built natively into the OS core image
-      run: |
-        convert phase_space_chart.svg phase_space_chart.png
-        echo "✓ SUCCESS: Standard format PNG snapshot generated."
 
     - name: 6. Push Rasterized Artifacts Straight to Code Tree
       run: |
