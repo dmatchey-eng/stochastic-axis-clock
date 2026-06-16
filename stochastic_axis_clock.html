@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stochastic Axis Clock: Unified Multi-Panel Workspace</title>
+    <style>
+        body {
+            background-color: #050608;
+            color: #66fcf1;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+        }
+
+        .subtitle {
+            color: #c5a059;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .workspace-matrix {
+            display: flex;
+            flex-direction: column;
+            width: 98vw;
+            max-width: 1200px;
+            background: #0f1319;
+            border: 1px solid #c5a059;
+            padding: 12px;
+            box-shadow: 0 0 35px rgba(197, 160, 89, 0.15);
+            gap: 12px;
+        }
+
+        /* Flex container mapping the clock track engine and 3D transformer flatly side-by-side */
+        .viewport-split {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            height: 480px;
+        }
+
+        .control-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+            width: 120px;
+            height: 400px; /* Aligns with the 5 active clock tracks */
+        }
+
+        .flip-btn {
+            background: #050608;
+            color: #66fcf1;
+            border: 1px solid #66fcf122;
+            height: 80px; 
+            font-family: inherit;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .flip-btn:hover {
+            border-color: #66fcf1;
+            background: #1f2833;
+        }
+
+        .flip-btn.active-warp {
+            color: #050608;
+            background: #c5a059;
+            border-color: #ffffff;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            height: 480px;
+        }
+
+        #clockCanvas {
+            width: 500px;
+            height: 480px;
+            background: #000000;
+            border: 1px solid #c5a059;
+        }
+
+        #scatterCanvas {
+            flex-grow: 1;
+            height: 480px;
+            background: #000000;
+            border: 1px solid #66fcf1;
+        }
+
+        .controls-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #050608;
+            padding: 10px 15px;
+            border: 1px solid #c5a05933;
+            font-size: 0.8rem;
+        }
+
+        .global-btn {
+            background: #0f1319;
+            color: #c5a059;
+            border: 1px solid #c5a059;
+            padding: 8px 16px;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .global-btn:hover {
+            background: #c5a059;
+            color: #050608;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #c5a059;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #0f1319;
+            border: 1px solid #66fcf1;
+            height: 5px;
+            width: 150px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            background: #c5a059;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        #diagnostics {
+            font-size: 0.75rem;
+            color: #8892b0;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>STOCHASTIC AXIS MATRIX WORKSPACE</h1>
+    <div class="subtitle">Unified 2D Track Controls & Relativistic 3D Collision Vertex Transformer</div>
+
+    <div class="workspace-matrix">
+        <div class="viewport-split">
+            <!-- Intercept Interface: Aligns buttons flat against clockCanvas tracks -->
+            <div class="control-column">
+                <button class="flip-btn" id="btn-0">TRACK I<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-1">TRACK II<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-2">TRACK III<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-3">TRACK IV<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
+            </div>
+            
+            <!-- Left Canvas: Visualizes the 5 parallel shape-morphing clock lanes -->
+            <canvas id="clockCanvas"></canvas>
+            
+            <!-- Right Canvas: Visualizes the direct 3D vertex transformation point cloud -->
+            <canvas id="scatterCanvas"></canvas>
+        </div>
+        
+        <div class="controls-footer">
+            <button id="playPauseBtn" class="global-btn">HALT MATRIX</button>
+            <div class="slider-group">
+                <span>WARP FACTOR:</span>
+                <input type="range" id="speedSlider" min="0" max="5" step="0.1" value="1">
+                <span id="speedVal">1.0x</span>
+            </div>
+            <span id="vertexCounter">VERTICES MAPPED: 0</span>
+        </div>
+
+        <div id="diagnostics">CO-LINKING PIPELINES... BOOTING HARDWARE INTERCONNECT LAYER...</div>
+    </div>
+    <script>
+        // --- SHADER 1: 2D Shape-Morphing Track Visualizer Shaders ---
+        const clockVsSource = `#version 300 es
+            in vec2 position;
+            out vec2 vUv;
+            void main() {
+                vUv = position * 0.5 + 0.5;
+                gl_Position = vec4(position, 0.0, 1.0);
+            }
+        `;
+
+        const clockFsSource = `#version 300 es
+            precision highp float;
+            in vec2 vUv;
+            out vec4 fragColor;
+
+            uniform float uTime;
+            uniform float uFib[5];
+            uniform float uFreq[5];
+            uniform vec3 uBaseColors[5];
+            uniform int uSuperString[153];
+            uniform float uLaneDirections[5];
+
+            float calculateAxisPosition(float fib, float freq, float offset, float direction) {
+                float adjustedTime = uTime * direction;
+                float rawSway = log(1.0 + abs(sin((adjustedTime * 0.5 + offset) * freq)));
+                return 0.1 + (abs(sin(rawSway * fib)) * 0.8);
+            }
+
+            float sdfBox(vec2 p, vec2 b) {
+                vec2 d = abs(p) - b;
+                return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+            }
+
+            float sdfRhombus(vec2 p, vec2 b) {
+                vec2 q = abs(p);
+                float h = clamp((-2.0 * q.x + b.x) / (b.x + b.y), -1.0, 1.0);
+                float d = length(q - 0.5 * b * vec2(1.0 - h, 1.0 + h));
+                return d * sign(q.x * b.y + q.y * b.x - b.x * b.y);
+            }
+
+            void main() {
+                vec3 finalColor = vec3(0.02, 0.02, 0.03);
+                float pX[5];
+                pX[0] = calculateAxisPosition(uFib[0], uFreq[0], 0.0, uLaneDirections[0]);
+                pX[1] = calculateAxisPosition(uFib[1], uFreq[1], 100.0, uLaneDirections[1]);
+                pX[2] = calculateAxisPosition(uFib[2], uFreq[2], 200.0, uLaneDirections[2]);
+                pX[3] = calculateAxisPosition(uFib[3], uFreq[3], 300.0, uLaneDirections[3]);
+                pX[4] = calculateAxisPosition(uFib[4], uFreq[4], 400.0, uLaneDirections[4]);
+
+                int laneIndex = int(vUv.y * 6.0);
+                float localY = fract(vUv.y * 6.0) * 2.0 - 1.0;
+                vec2 baseDimensions = vec2(0.045, 0.65);
+
+                vec3 activeColors[5];
+                for(int i = 0; i < 5; i++) {
+                    float cycle = sin(uTime * 0.0015 + float(i) * 1.2) * 0.5 + 0.5;
+                    activeColors[i] = mix(uBaseColors[i], uBaseColors[(i+1)%5], cycle);
+                }
+
+                if (laneIndex < 5) {
+                    float targetX = pX[laneIndex];
+                    int superIndex = int(uTime * 0.0003) % 153;
+                    int activeSymbol = uSuperString[superIndex];
+                    targetX = fract(targetX + float(activeSymbol) * 0.05);
+
+                    float dt = 0.001;
+                    float nextPos = calculateAxisPosition(uFib[laneIndex], uFreq[laneIndex], dt, uLaneDirections[laneIndex]);
+                    float velocity = abs(nextPos - pX[laneIndex]) / dt;
+                    float speedOfLightC = 15.0;
+                    float beta = clamp(velocity / speedOfLightC, 0.0, 0.99);
+                    float lorentzFactor = sqrt(1.0 - (beta * beta));
+
+                    float dynamicPhase = log(1.0 + abs(sin((uTime * uLaneDirections[laneIndex]) * uFreq[laneIndex]))) * uFib[laneIndex];
+                    float shapeMorphFactor = abs(cos(dynamicPhase * 1.2));
+
+                    vec2 contractedDimensions = vec2(baseDimensions.x * lorentzFactor, baseDimensions.y);
+                    vec2 localPos = vec2(vUv.x - targetX, localY);
+
+                    float dBox = sdfBox(localPos, contractedDimensions);
+                    float dRhombus = sdfRhombus(localPos, contractedDimensions * 1.5);
+                    float dCircle = length(localPos) - contractedDimensions.x * 1.5;
+
+                    float mixedSDF = mix(dBox, dRhombus, shapeMorphFactor);
+                    if (shapeMorphFactor > 0.7) mixedSDF = mix(mixedSDF, dCircle, (shapeMorphFactor - 0.7) / 0.3);
+
+                    if (mixedSDF < 0.0) {
+                        finalColor = activeColors[laneIndex];
+                        if (mixedSDF > -0.006) finalColor = vec3(1.0, 1.0, 1.0);
+                    }
+                    if (fract(vUv.y * 6.0) < 0.02) finalColor += vec3(0.04);
+                } else {
+                    finalColor = vec3(0.05, 0.06, 0.08);
+                    for (int i = 0; i < 5; i++) {
+                        int prevIdx = (i == 0) ? 4 : i - 1;
+                        float originX = pX[prevIdx]; float currentX = pX[i];
+                        float totalVectorDistance = currentX - originX;
+                        float traceProgress = fract(uTime * uFreq[i] * 4.0);
+                        float invertedX = originX + (totalVectorDistance * (1.0 - traceProgress));
+
+                        vec2 matrixLocalPos = vec2(vUv.x - invertedX, localY);
+                        float mBox = sdfBox(matrixLocalPos, baseDimensions * vec2(0.7, 0.6));
+                        if (mBox < 0.0) {
+                            vec3 traceColor = mix(finalColor, activeColors[i], 1.0 - traceProgress);
+                            if (mBox > -0.006) traceColor = vec3(1.0, 1.0, 1.0);
+                            finalColor = mix(finalColor, traceColor, 0.9);
+                        }
+                    }
+                }
+                fragColor = vec4(finalColor, 1.0);
+            }
+        `;
+
+        // --- SHADER 2: Relativistic 3D Scatter Component Shaders ---
+        const scatterVsSource = `#version 300 es
+            in vec3 position;
+            in vec3 color;
+            uniform mat4 uProjection;
+            uniform mat4 uView;
+            out vec3 vColor;
+            void main() {
+                vColor = color;
+                gl_PointSize = clamp(15.0 / (gl_Position.z + 2.5), 3.0, 12.0);
+                gl_Position = uProjection * uView * vec4(position, 1.0);
+            }
+        `;
+
+        const scatterFsSource = `#version 300 es
+            precision highp float;
+            in vec3 vColor;
+            out vec4 fragColor;
+            void main() {
+                vec2 circCoord = gl_PointCoord * 2.0 - 1.0;
+                if (dot(circCoord, circCoord) > 1.0) discard;
+                float dist = 1.0 - length(circCoord);
+                fragColor = vec4(vColor + vec3(dist * 0.4), dist);
+            }
+        `;
+        // --- FULLY POPULATED HARUHI N=5 SUPERPERMUTATION MATRIX DATA ---
+        const HARUHI_N5 = new Int32Array([
+            1,2,3,4,5,1,2,3,4,1,5,2,3,1,4,5,2,1,3,4,5,2,1,3,4,2,5,1,3,2,4,5,1,3,2,4,1,5,3,2,4,1,3,5,2,4,1,3,2,5,
+            4,1,3,2,4,5,3,1,2,4,5,3,1,2,5,4,3,1,2,5,3,4,1,2,5,3,1,4,2,5,3,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,3,
+            1,2,4,5,1,3,2,4,5,1,3,2,5,4,1,3,2,5,1,4,3,2,5,1,3,4,2,5,1,3,2,4,5,2,1,3,4,5,2,3,1,4,5,2,3,4,1,5,2,3,
+            4,5,1,2,3,4,5,1,3,2,4,5,1,3
+        ]);
+
+        // Static configuration settings for track parameters
+        const fibCore = [2.0, 5.0, 13.0, 21.0, 34.0];
+        const freqCore = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
+        const colorHexMap = [
+            [0.0, 1.0, 1.0], // Cyan
+            [1.0, 0.0, 0.5], // Magenta (Prime Clock)
+            [1.0, 0.7, 0.0], // Amber
+            [0.0, 1.0, 0.5], // Emerald
+            [1.0, 1.0, 1.0]  // White
+        ];
+
+        // 3D Matrix Projections Math
+        function createPerspectiveMatrix(fovy, aspect, near, far) {
+            const f = 1.0 / Math.tan(fovy / 2); const nf = 1.0 / (near - far);
+            return new Float32Array([
+                f / aspect, 0, 0, 0,  0, f, 0, 0,  0, 0, (far + near) * nf, -1,  0, 0, (2 * far * near) * nf, 0
+            ]);
+        }
+
+        function createYRotationMatrix(angle) {
+            const c = Math.cos(angle), s = Math.sin(angle);
+            return new Float32Array([ c, 0, -s, 0,  0, 1, 0, 0,  s, 0, c, 0,  0, 0, 0, 1 ]);
+        }
+
+        // Host side calculation loop helper mirroring the GPU phase trajectories
+        function getTimelineX(idx, time, direction) {
+            float adjTime = time * direction;
+            float rawSway = log(1.0 + abs(sin((adjTime * 0.5 + (float(idx) * 100.0)) * freqCore[idx])));
+            float targetX = 0.1 + (abs(sin(rawSway * fibCore[idx])) * 0.8);
+            int superIdx = int(time * 0.0003) % 153;
+            return fract(targetX + float(HARUHI_N5[superIdx]) * 0.05);
+        }
+        // --- GRAPHICS ENVIRONMENT ASSIGNMENT ---
+        const clockCanvas = document.getElementById('clockCanvas');
+        const glClock = clockCanvas.getContext('webgl2');
+
+        const scatterCanvas = document.getElementById('scatterCanvas');
+        const glScatter = scatterCanvas.getContext('webgl2');
+
+        if (!glClock || !glScatter) alert("Dual-context WebGL2 binding crashed.");
+
+        // Resize Layout Profiles
+        clockCanvas.width = 500; clockCanvas.height = 480;
+        glClock.viewport(0, 0, clockCanvas.width, clockCanvas.height);
+
+        scatterCanvas.width = 560; scatterCanvas.height = 480;
+        glScatter.viewport(0, 0, scatterCanvas.width, scatterCanvas.height);
+        glScatter.enable(glScatter.DEPTH_TEST);
+        glScatter.enable(glScatter.BLEND);
+        glScatter.blendFunc(glScatter.SRC_ALPHA, glScatter.ONE_MINUS_SRC_ALPHA);
+
+        function makeProgram(gl, vs, fs) {
+            const vShader = gl.createShader(gl.VERTEX_SHADER); gl.shaderSource(vShader, vs); gl.compileShader(vShader);
+            const fShader = gl.createShader(gl.FRAGMENT_SHADER); gl.shaderSource(fShader, fs); gl.compileShader(fShader);
+            const prog = gl.createProgram(); gl.attachShader(prog, vShader); gl.attachShader(prog, fShader); gl.linkProgram(prog);
+            return prog;
+        }
+
+        // Compile Both Systems
+        const clockProg = makeProgram(glClock, clockVsSource, clockFsSource);
+        glClock.useProgram(clockProg);
+
+        const scatterProg = makeProgram(glScatter, scatterVsSource, scatterFsSource);
+        glScatter.useProgram(scatterProg);
+
+        // Setup 2D Screen Quad Elements
+        const quadBuf = glClock.createBuffer(); glClock.bindBuffer(glClock.ARRAY_BUFFER, quadBuf);
+        glClock.bufferData(glClock.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), glClock.STATIC_DRAW);
+        const clPos = glClock.getAttribLocation(clockProg, "position");
+        glClock.enableVertexAttribArray(clPos); glClock.vertexAttribPointer(clPos, 2, glClock.FLOAT, false, 0, 0);
+
+        // Bind Static Arrays to 2D Shaders
+        glClock.uniform1fv(glClock.getUniformLocation(clockProg, "uFib"), new Float32Array(fibCore));
+        glClock.uniform1fv(glClock.getUniformLocation(clockProg, "uFreq"), new Float32Array(freqCore));
+        glClock.uniform1iv(glClock.getUniformLocation(clockProg, "uSuperString"), HARUHI_N5);
+        glClock.uniform3fv(glClock.getUniformLocation(clockProg, "uBaseColors"), new Float32Array(colorHexMap.flat()));
+
+        const clTimeLoc = glClock.getUniformLocation(clockProg, "uTime");
+        const clDirLoc = glClock.getUniformLocation(clockProg, "uLaneDirections");
+
+        // Setup Dynamic 3D Vertex Buffers
+        const MAX_POINTS = 6000;
+        const vertexArray = new Float32Array(MAX_POINTS * 3);
+        const colorArray = new Float32Array(MAX_POINTS * 3);
+        let activePoints = 0, writePtr = 0;
+
+        const scPosBuf = glScatter.createBuffer(); const scPosLoc = glScatter.getAttribLocation(scatterProg, "position");
+        const scColBuf = glScatter.createBuffer(); const scColLoc = glScatter.getAttribLocation(scatterProg, "color");
+        const scProjLoc = glScatter.getUniformLocation(scatterProg, "uProjection");
+        const scViewLoc = glScatter.getUniformLocation(scatterProg, "uView");
+
+        glScatter.uniformMatrix4fv(scProjLoc, false, createPerspectiveMatrix(Math.PI / 4, scatterCanvas.width / scatterCanvas.height, 0.1, 100.0));
+
+        let laneDirections = new Float32Array([1.0, 1.0, 1.0, 1.0, 1.0]);
+        // --- CO-LINKING TRANSFORMER CORRELATOR ---
+        // Reads live track coordinates directly out of your visual clock lanes 
+        // and instantly feeds them into the 3D vertex array buffer.
+        function executeInterconnectHarvester(timeSec) {
+            let activePositions = [];
+            for (let i = 0; i < 5; i++) {
+                activePositions.push(getTimelineX(i, timeSec, laneDirections[i]));
+            }
+
+            const collisionThreshold = 0.055;
+
+            // Analyze lane combinations for real-time spatial overlaps
+            for (let i = 0; i < 5; i++) {
+                for (let j = i + 1; j < 5; j++) {
+                    if (Math.abs(activePositions[i] - activePositions[j]) < collisionThreshold) {
+                        
+                        // Convert the active lane overlaps into 3D Coordinates
+                        let ptX = (activePositions[i] * 2.0 - 1.0) * 1.4;
+                        let ptY = (activePositions[j] * 2.0 - 1.0) * 1.4;
+                        
+                        // Z-axis calculates the time-distortion delta caused by direction inversions
+                        let ptZ = (Math.sin(timeSec * 0.1) * (fibCore[i] * laneDirections[i] + fibCore[j] * laneDirections[j])) * 0.03;
+
+                        let idx = writePtr * 3;
+                        vertexArray[idx]     = ptX;
+                        vertexArray[idx + 1] = ptY;
+                        vertexArray[idx + 2] = ptZ;
+
+                        colorArray[idx]     = colorHexMap[i][0];
+                        colorArray[idx + 1] = colorHexMap[i][1];
+                        colorArray[idx + 2] = colorHexMap[i][2];
+
+                        writePtr = (writePtr + 1) % MAX_POINTS;
+                        if (activePoints < MAX_POINTS) activePoints++;
+                    }
+                }
+            }
+        }
+
+        // --- MASTER SYSTEM RENDERING PIPELINE ---
+        let internalTime = 0, lastTime = 0, isRunning = true, speedScale = 1.0, camAngle = 0;
+
+        // Wire Up Interactive Dashboard Buttons
+        for (let i = 0; i < 5; i++) {
+            const btn = document.getElementById(`btn-${i}`);
+            btn.addEventListener('click', () => {
+                laneDirections[i] *= -1.0;
+                const isWarping = laneDirections[i] < 0;
+                btn.classList.toggle('active-warp', isWarping);
+                btn.innerHTML = isWarping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
+                
+                document.getElementById('diagnostics').innerText = `INTERRUPT: TRACK ${i+1} TIMELINE DIRECTION FLIPPED`;
+                
+                setTimeout(() => {
+                    if (laneDirections[i] < 0) {
+                        laneDirections[i] = 1.0;
+                        btn.classList.remove('active-warp');
+                        btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
+                        document.getElementById('diagnostics').innerText = `AUTO-SYNC: TRACK ${i+1} BALANCED BACK TO TARGET FORWARD ALIGNMENT`;
+                    }
+                }, 4000);
+            });
+        }
+
+        document.getElementById('playPauseBtn').addEventListener('click', (e) => {
+            isRunning = !isRunning; e.target.innerText = isRunning ? "HALT MATRIX" : "RESUME MATRIX";
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            speedScale = parseFloat(e.target.value);
+            document.getElementById('speedVal').innerText = speedScale.toFixed(1) + "x";
+        });
+
+        function masterPipelineFrame(timestamp) {
+            const delta = timestamp - lastTime; lastTime = timestamp;
+            if (isRunning) internalTime += delta * speedScale * 0.002; // Controlled internal clock speed multiplier
+
+            // 1. Process and Draw Shape-Morphing Tracks Panel (Canvas 1)
+            glClock.useProgram(clockProg);
+            glClock.uniform1f(clTimeLoc, internalTime);
+            glClock.uniform1fv(clDirLoc, laneDirections);
+            glClock.drawArrays(glClock.TRIANGLES, 0, 6);
+
+            // 2. Intercept positions and populate 3D points
+            executeInterconnectHarvester(internalTime);
+
+            // 3. Process and Draw 3D Transformer Viewport Panel (Canvas 2)
+            glScatter.clearColor(0.01, 0.01, 0.015, 1.0);
+            glScatter.clear(glScatter.COLOR_BUFFER_BIT | glScatter.DEPTH_BUFFER_BIT);
+            glScatter.useProgram(scatterProg);
+
+            camAngle += 0.005;
+            const viewMat = createYRotationMatrix(camAngle);
+            viewMat[14] = -3.2; // Push camera backward along the Z axis to fit view
+            glScatter.uniformMatrix4fv(scViewLoc, false, viewMat);
+
+            // Bind vertices
+            glScatter.bindBuffer(glScatter.ARRAY_BUFFER, scPosBuf); glScatter.bufferData(glScatter.ARRAY_BUFFER, vertexArray, glScatter.DYNAMIC_DRAW);
+            glScatter.enableVertexAttribArray(scPosLoc); glScatter.vertexAttribPointer(scPosLoc, 3, glScatter.FLOAT, false, 0, 0);
+
+            // Bind colors
+            glScatter.bindBuffer(glScatter.ARRAY_BUFFER, scColBuf); glScatter.bufferData(glScatter.ARRAY_BUFFER, colorArray, glScatter.DYNAMIC_DRAW);
+            glScatter.enableVertexAttribArray(scColLoc); glScatter.vertexAttribPointer(scColLoc, 3, glScatter.FLOAT, false, 0, 0);
+
+            if (activePoints > 0) glScatter.drawArrays(glScatter.POINTS, 0, activePoints);
+
+            document.getElementById('vertexCounter').innerText = `VERTICES MAPPED: ${activePoints} / ${MAX_POINTS}`;
+            if (internalTime > 1.0 && document.getElementById('diagnostics').innerText.includes("COMPILING")) {
+                document.getElementById('diagnostics').innerText = "CROSS-LINKED SYSTEM CHANNELS LOCKED IN OPERATIONAL EQUILIBRIUM";
+            }
+            requestAnimationFrame(masterPipelineFrame);
+        }
+        requestAnimationFrame((t) => { lastTime = t; requestAnimationFrame(masterPipelineFrame); });
+    </script>
+</body>
+</html>
