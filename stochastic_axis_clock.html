@@ -243,7 +243,7 @@
             let adjustedTimeSec = timeMs * 0.001 * direction;
             
             // Core Logarithmic Sway function
-            let rawSway = Math.log1p(Math.abs(Math.sin(adjustedTimeSec * channelFreq[idx] * 40.0)));
+            let rawSway = Math.log1p(Math.abs(Math.sin(adjustedTimeSec * channelFreq[idx] * 3.0)));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
             
             // Advance sequential indexes through the 153-item database string
@@ -253,7 +253,7 @@
             // COMPUTE INSTANTANEOUSE VELOCITY VECTOR (dx/dt)
             let deltaCheck = 0.1;
             let checkTimeSec = (timeMs + deltaCheck) * 0.001 * direction;
-            let nextRawSway = Math.log1p(Math.abs(Math.sin(checkTimeSec * channelFreq[idx] * 40.0)));
+            let nextRawSway = Math.log1p(Math.abs(Math.sin(checkTimeSec * channelFreq[idx] * 3.0)));
             let nextTx = 0.1 + (Math.abs(Math.sin(nextRawSway * channelFib[idx])) * 0.8);
             let nextFinalX = (nextTx + HARUHI_N5[superIdx] * 0.02) % 1.0;
             
@@ -279,7 +279,7 @@
                         // Y = The combined structural velocity of the colliding channels
                         let mappedX = (spatialDistance / collisionWidth) * plotCanvas.width;
                         let combinedVelocity = states[i].vel + states[j].vel;
-                        let mappedY = plotCanvas.height - (combinedVelocity * 35.0);
+                        let mappedY = plotCanvas.height - (combinedVelocity * 805.0);
 
                         // Clamp outputs inside canvas display borders
                         mappedY = Math.max(10, Math.min(plotCanvas.height - 10, mappedY));
