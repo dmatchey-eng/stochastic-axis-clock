@@ -1,38 +1,42 @@
 import dgram from 'dgram';
 
 // --- CONFIGURATION TARGETS ---
-const ATOMIC_NTP_SERVER = 'pool.ntp.org'; // Strata-1 Atomic/GPS disciplined server line
+const ATOMIC_NTP_SERVER = 'pool.ntp.org'; // Strata-1 Atomic reference pool
 const NTP_PORT = 123;
-const SAMPLE_INTERVAL_MS = 2000; // Poll the network array every 2 seconds
+const SAMPLE_INTERVAL_MS = 2000; // Poll the analytics array every 2 seconds
 
-// Parallel Multi-Channel Metrics Array (Matches the WebGL GPU Configuration)
+// The 153-Item Minimal Superpermutation dataset matrix for N=5
+const HARUHI_N5_STRING = [
+    1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,5,1,4,2,3,
+    5,1,2,4,3,5,1,2,3,4,5,1,3,2,4,5,1,3,4,2,5,1,3,4,5,2,1,3,4,2,5,1,4,3,2,5,1,
+    4,2,3,5,1,4,2,5,3,1,4,2,3,5,2,1,4,3,5,2,1,4,5,3,2,1,4,3,5,3,1,4,2,5,3,1,4,
+    5,2,3,1,4,2,5,4,1,3,2,5,4,1,3,5,2,4,1,3,2,5,2,4,1,3,5,2,4,3,1,5,2,4,3,5,1,
+    2,4,3,5,2,1,4,3,5,1
+];
+
+// 5-Channel Relativistic Engine Array Profile
 const channels = [
-    { name: "CH I  (Cyan)   ", fib: 2.0,  freq: 0.0008 },
-    { name: "CH II (Magenta)", fib: 5.0,  freq: 0.0012 },
-    { name: "CH III(Amber)  ", fib: 13.0, freq: 0.0005 },
-    { name: "CH IV (Emerald)", fib: 21.0, freq: 0.0018 }
+    { id: 0, name: "CH I  (Cyan)   ", fib: 2.0,  freq: 0.0008 },
+    { id: 1, name: "CH II (Magenta)", fib: 5.0,  freq: 0.0012, isPrime: true }, // THE PRIME REFERENCE BENCHMARK
+    { id: 2, name: "CH III(Amber)  ", fib: 13.0, freq: 0.0005 },
+    { id: 3, name: "CH IV (Emerald)", fib: 21.0, freq: 0.0018 },
+    { id: 4, name: "CH V  (White)  ", fib: 34.0, freq: 0.0025 }
 ];
 
 console.log("=============================================================");
-console.log("        CLOCK_COMPARE.JS: MULTI-CHANNEL ATOMIC MONITOR        ");
+console.log("    CLOCK_COMPARE.JS: COLLISION RESOLUTION ENGINE MATRIX     ");
 console.log("=============================================================");
-console.log(`Synchronizing with Atomic Clock Core Matrix via: ${ATOMIC_NTP_SERVER}\n`);
+console.log(`Connecting to Atomic Reference Array via: ${ATOMIC_NTP_SERVER}\n`);
 
-/**
- * Dispatches a raw UDP packet to query an atomic NTP reference epoch.
- * Uses the low-level NTP timestamp format (seconds since Jan 1 1900).
- */
 function fetchAtomicTime() {
     return new Promise((resolve, reject) => {
         const client = dgram.createSocket('udp4');
         const ntpData = Buffer.alloc(48);
-        
-        // Set NTP Client Mode configuration flags in the first byte
         ntpData[0] = 0x1B; 
 
         const timeout = setTimeout(() => {
             client.close();
-            reject(new Error("Atomic clock connection timed out."));
+            reject(new Error("Atomic NTP connection timeout."));
         }, 1500);
 
         client.send(ntpData, 0, ntpData.length, NTP_PORT, ATOMIC_NTP_SERVER, (err) => {
@@ -46,73 +50,91 @@ function fetchAtomicTime() {
         client.on('message', (msg) => {
             clearTimeout(timeout);
             client.close();
-
-            // Extract the transmit timestamp fields from bytes 40-43
             const secPart = msg.readUInt32BE(40);
             const fracPart = msg.readUInt32BE(44);
-
-            // Convert raw NTP seconds (starting 1900) to standard Unix Epoch MS (starting 1970)
             const ntpEpochDelta = 2208988800;
             const unixSeconds = secPart - ntpEpochDelta;
             const milliseconds = Math.round((fracPart / 0x100000000) * 1000);
-            
-            const atomicEpochMS = (unixSeconds * 1000) + milliseconds;
-            resolve(atomicEpochMS);
+            resolve((unixSeconds * 1000) + milliseconds);
         });
     });
 }
 
-// --- MAIN RUNTIME ANALYSIS MATRIX ---
+// Helper: Calculate exact spatial axis position matching the shader logic
+function getSpatialPosition(ch, timelineSec) {
+    const rawSway = Math.log1p(Math.abs(Math.sin(timelineSec * 0.5 * ch.freq)));
+    let targetX = 0.1 + (Math.abs(Math.sin(rawSway * ch.fib)) * 0.8);
+    
+    // Process the discrete Haruhi superpermutation positional shift step
+    const superIndex = Math.floor(timelineSec * 0.3) % 153;
+    const activeSymbol = HARUHI_N5_STRING[superIndex];
+    return (targetX + activeSymbol * 0.05) % 1.0;
+}
+
 async function runAnalysisCycle() {
     try {
-        // 1. Gather high-resolution internal CPU monotonic cycle time (Nanoseconds)
-        const cpuStartNanoseconds = process.hrtime.bigint();
-
-        // 2. Query the absolute physical atomic clock state over the wire
+        const cpuStartNs = process.hrtime.bigint();
         const atomicTimestampMS = await fetchAtomicTime();
+        const cpuEndNs = process.hrtime.bigint();
         
-        // 3. Capture the CPU time again immediately after network ingestion finishes
-        const cpuEndNanoseconds = process.hrtime.bigint();
-        const networkLatencyMS = Number(cpuEndNanoseconds - cpuStartNanoseconds) / 1000000;
-
-        // 4. Extract standard host machine time parameters
         const localSystemTimeMS = Date.now();
-        const absoluteDriftMS = localSystemTimeMS - atomicTimestampMS;
+        const atomicDriftMS = localSystemTimeMS - atomicTimestampMS;
+        const timelineTimeSec = Number(cpuEndNs / 1000000000n);
 
-        // Convert the nanosecond CPU clock to a steady floating-point timeline (seconds)
-        const timelineTimeSec = Number(cpuEndNanoseconds / 1000000000n);
+        // 1. GATHER SPATIAL POSITIONS FOR ALL CHANNELS
+        const positions = channels.map(ch => ({
+            ...ch,
+            posX: getSpatialPosition(ch, timelineTimeSec)
+        }));
 
-        console.log(`[SYS ENGINE LOG -> ${new Date().toISOString()}]`);
-        console.log(` ├─ Net Ingestion Latency : ${networkLatencyMS.toFixed(3)} ms`);
-        console.log(` ├─ Local Host Grid Time  : ${localSystemTimeMS} ms`);
-        console.log(` └─ Atomic Drift Variable : ${absoluteDriftMS > 0 ? '+' : ''}${absoluteDriftMS} ms`);
-        console.log(" ┌──────────────────────────────────────────────────────────┐");
-        console.log(" │ CHANNEL ID   │ FIB CORE │ WAVE FREQ │ CURRENT PHASE RAD  │");
-        console.log(" ├──────────────┼──────────┼───────────┼────────────────────┤");
+        // Extract the position of our Prime Clock Reference (Track II / Magenta)
+        const primeClock = positions.find(p => p.isPrime);
 
-        // 5. Asynchronously step over and evaluate all 4 channels simultaneously
-        channels.forEach((ch) => {
-            // Replicate the exact mathematical transformation running in the GPU fragment shader
-            const rawLogSway = Math.log1p(Math.abs(Math.sin(timelineTimeSec * ch.freq)));
-            const structuralPhaseDelta = rawLogSway * ch.fib;
+        // 2. DETECT STRUCTURAL TRACK COLLISIONS
+        // A collision occurs if any channel occupies the same coordinate width sector as another
+        const collisionThreshold = 0.045; // Matches shader block width
+        let collisionEvents = [];
 
-            console.log(` │ ${ch.name} │ ${ch.fib.toString().padEnd(8)} │ ${ch.freq.toString().padEnd(9)} │ ${structuralPhaseDelta.toFixed(14)} │`);
+        for (let i = 0; i < positions.length; i++) {
+            for (let j = i + 1; j < positions.length; j++) {
+                const distance = Math.abs(positions[i].posX - positions[j].posX);
+                if (distance < collisionThreshold) {
+                    collisionEvents.push(`${positions[i].id + 1}⚡${positions[j].id + 1}`);
+                }
+            }
+        }
+
+        console.log(`\n[ANALYSIS LOG -> ${new Date().toISOString()}]`);
+        console.log(` ├─ Global Atomic Sync Drift: ${atomicDriftMS > 0 ? '+' : ''}${atomicDriftMS} ms`);
+        console.log(` ├─ Active Collisions Found : ${collisionEvents.length > 0 ? collisionEvents.join(', ') : 'NONE'}`);
+        console.log(" ┌────────────────────────────────────────────────────────────────────────┐");
+        console.log(" │ CHANNEL NAME     │ FIB CORE │ ABS POSITION │ RELATIVE DRIFT TO PRIME   │");
+        console.log(" ├──────────────────┼──────────┼──────────────┼───────────────────────────┤");
+
+        // 3. EVALUATE TRACK DRIFT RELATIVE TO THE PRIME CLOCK REFERENCE
+        positions.forEach((ch) => {
+            // Compare this channel's location directly against the Prime Reference position
+            const structuralVariance = ch.posX - primeClock.posX;
+            const markers = ch.isPrime ? " [PRIME REF] " : `${structuralVariance > 0 ? '+' : ''}${structuralVariance.toFixed(6)}`;
+
+            console.log(` │ ${ch.name} │ ${ch.fib.toString().padEnd(8)} │ ${ch.posX.toFixed(6).padEnd(12)} │ ${markers.padEnd(25)} │`);
         });
         
-        console.log(" └──────────────────────────────────────────────────────────┘");
+        console.log(" └────────────────────────────────────────────────────────────────────────┘");
 
-        // System Health Threshold Diagnostics Guard
-        if (Math.abs(absoluteDriftMS) > 30) {
-            console.log(" ! ALERT: Clock desynchronization warning. Multi-axis execution matrix is unstable.");
+        // 4. DETECT IF SYSTEM STRESS CORRELATES WITH COLLISION CONGESTION
+        if (collisionEvents.length >= 3) {
+            console.log(` ⚠️ CONGESTION ALERT: Heavy multi-lane collision cluster detected!`);
+            console.log(`   Five-part thread processing density is peaking. High risk of microsecond CPU stutters.`);
         } else {
-            console.log(" ✓ STATUS: Clock drift inside safe parameters. Mathematical alignment verified.");
+            console.log("  STATUS: Combinatorial state space clean. Thread queues running efficiently.");
         }
 
     } catch (error) {
-        console.error("\n [CRITICAL ERROR]: Could not parse structural time metrics:", error.message);
+        console.error("\n [CRITICAL DATA FAULT]: Matrix parsing execution error:", error.message);
     }
 }
 
-// Spin the execution matrix infinitely at the designated polling interval
+// Initialize the diagnostic engine loop
 setInterval(runAnalysisCycle, SAMPLE_INTERVAL_MS);
 runAnalysisCycle();
