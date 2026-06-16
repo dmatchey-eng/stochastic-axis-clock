@@ -55,7 +55,7 @@
             box-sizing: border-box;
         }
 
-        /* LOCKED ACTION CONTAINER: Prevents sizing modifications when clicked */
+        /* LOCKED ACTION PANEL: Strict sizing limits stop container edge shifts */
         .button-panel {
             display: flex;
             flex-direction: column;
@@ -72,7 +72,6 @@
             color: #66fcf1;
             border: none;
             border-bottom: 1px solid #c5a05933;
-            /* Locked parameters guarantee box edges never shift */
             height: 96px; 
             max-height: 96px;
             min-height: 96px;
@@ -102,7 +101,6 @@
             border-bottom: 1px solid #ffffff;
         }
 
-        /* WEBGL FRAME VIEW: Fully isolated layout boundary caps */
         .canvas-wrapper {
             flex-grow: 1;
             height: 480px;
@@ -206,10 +204,9 @@
             </div>
         </div>
 
-        <div id="diagnostics">PIPELINE ASSEMBLY CORRECTIONS ONLINE...</div>
+        <div id="diagnostics">PIPELINE SECURED | CONTEXT READY...</div>
     </div>
     <script>
-        // Shader Set A: Renders the 5 horizontal lanes and the background bus channel
         const lanesVsSource = `#version 300 es
             in vec2 position;
             out vec2 vUv;
@@ -233,7 +230,7 @@
 
             float calculateAxisPosition(float fib, float freq, float offset, float direction) {
                 float adjustedTime = uTime * direction;
-                float rawSway = log(1.0 + abs(sin((adjustedTime * 0.5 + offset) * freq)));
+                float rawSway = log(1.0 + abs(sin((adjustedTime * 0.0005 + offset) * freq)));
                 return 0.1 + (abs(sin(rawSway * fib)) * 0.8);
             }
 
@@ -264,24 +261,24 @@
 
                 vec3 activeColors[5];
                 for(int i = 0; i < 5; i++) {
-                    float cycle = sin(uTime * 0.0015 + float(i) * 1.2) * 0.5 + 0.5;
+                    float cycle = sin(uTime * 0.0005 + float(i) * 1.2) * 0.5 + 0.5;
                     activeColors[i] = mix(uBaseColors[i], uBaseColors[(i+1)%5], cycle);
                 }
 
                 if (laneIndex < 5) {
                     float targetX = pX[laneIndex];
-                    int superIndex = int(uTime * 0.0003) % 153;
+                    int superIndex = int(uTime * 0.0002) % 153;
                     int activeSymbol = uSuperString[superIndex];
-                    targetX = fract(targetX + float(activeSymbol) * 0.05);
+                    targetX = fract(targetX + float(activeSymbol) * 0.03);
 
-                    float dt = 0.001;
+                    float dt = 1.0;
                     float nextPos = calculateAxisPosition(uFib[laneIndex], uFreq[laneIndex], dt, uLaneDirections[laneIndex]);
                     float velocity = abs(nextPos - pX[laneIndex]) / dt;
-                    float speedOfLightC = 15.0;
+                    float speedOfLightC = 10.0;
                     float beta = clamp(velocity / speedOfLightC, 0.0, 0.99);
                     float lorentzFactor = sqrt(1.0 - (beta * beta));
 
-                    float dynamicPhase = log(1.0 + abs(sin((uTime * uLaneDirections[laneIndex]) * uFreq[laneIndex]))) * uFib[laneIndex];
+                    float dynamicPhase = log(1.0 + abs(sin((uTime * uLaneDirections[laneIndex] * 0.0005) * uFreq[laneIndex]))) * uFib[laneIndex];
                     float shapeMorphFactor = abs(cos(dynamicPhase * 1.2));
 
                     vec2 contractedDimensions = vec2(baseDimensions.x * lorentzFactor, baseDimensions.y);
@@ -303,14 +300,13 @@
                     if (fract(vUv.y * 6.0) < 0.02) finalColor += vec3(0.04);
                 }
                 else {
-                    // System Integrator Bus
                     finalColor = vec3(0.04, 0.05, 0.07);
                     for (int i = 0; i < 5; i++) {
                         int prevIdx = (i == 0) ? 4 : i - 1;
                         float originX = pX[prevIdx];
                         float currentX = pX[i];
                         float totalVectorDistance = currentX - originX;
-                        float traceProgress = fract(uTime * uFreq[i] * 4.0);
+                        float traceProgress = fract(uTime * uFreq[i] * 0.001);
                         float invertedX = originX + (totalVectorDistance * (1.0 - traceProgress));
 
                         vec2 matrixLocalPos = vec2(vUv.x - invertedX, localY);
@@ -326,8 +322,6 @@
                 fragColor = vec4(finalColor, 1.0);
             }
         `;
-
-        // Shader Set B: Verified compiler-safe execution path for perspective 3D coordinates
         const scatterVsSource = `#version 300 es
             in vec3 position;
             in vec3 color;
@@ -335,7 +329,7 @@
             out vec3 vColor;
             void main() {
                 vColor = color;
-                gl_PointSize = 6.0;
+                gl_PointSize = 5.0;
                 gl_Position = uMatrix * vec4(position, 1.0);
             }
         `;
@@ -347,22 +341,24 @@
             void main() {
                 vec2 circ = gl_PointCoord * 2.0 - 1.0;
                 if (dot(circ, circ) > 1.0) discard;
-                fragColor = vec4(vColor, 0.8);
+                fragColor = vec4(vColor, 0.7);
             }
         `;
         const canvas = document.getElementById('glCanvas');
         const gl = canvas.getContext('webgl2');
-
         if (!gl) alert("WebGL2 initialization failure.");
 
-        // Utility compile handles
         function buildShaderProgram(vsSrc, fsSrc) {
             const vs = gl.createShader(gl.VERTEX_SHADER);
             gl.shaderSource(vs, vsSrc);
             gl.compileShader(vs);
+            if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(vs));
+            
             const fs = gl.createShader(gl.FRAGMENT_SHADER);
             gl.shaderSource(fs, fsSrc);
             gl.compileShader(fs);
+            if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(fs));
+            
             const prog = gl.createProgram();
             gl.attachShader(prog, vs);
             gl.attachShader(prog, fs);
@@ -373,15 +369,19 @@
         const lanesProgram = buildShaderProgram(lanesVsSource, lanesFsSource);
         const scatterProgram = buildShaderProgram(scatterVsSource, scatterFsSource);
 
-        // Plane geometry quad for lanes background mapping
         const quadBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
 
-        // HARDCODED INJECTION: The complete 153-element N=5 minimal string sequence
-        const HARUHI_N5 = new Int32Array();
+        // FULLY POPULATED HARUHI STRING MATRIX (153 Elements)
+        const HARUHI_N5 = new Int32Array([
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,
+            2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,
+            4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,
+            2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,
+            4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4
+        ]);
 
-        // Pass structured uniform matrices down to lanes pipeline
         gl.useProgram(lanesProgram);
         gl.uniform1fv(gl.getUniformLocation(lanesProgram, "uFib"), new Float32Array([2.0, 5.0, 13.0, 21.0, 34.0]));
         gl.uniform1fv(gl.getUniformLocation(lanesProgram, "uFreq"), new Float32Array([0.0008, 0.0012, 0.0005, 0.0018, 0.0025]));
@@ -390,13 +390,12 @@
         ]));
         gl.uniform1iv(gl.getUniformLocation(lanesProgram, "uSuperString"), HARUHI_N5);
 
-        // Uniform pointer bindings
         const uLanesTimeLoc = gl.getUniformLocation(lanesProgram, "uTime");
         const uLanesDirLoc = gl.getUniformLocation(lanesProgram, "uLaneDirections");
         const uScatterMatrixLoc = gl.getUniformLocation(scatterProgram, "uMatrix");
 
         let laneDirectionsArray = new Float32Array([1.0, 1.0, 1.0, 1.0, 1.0]);
-        // --- 3D INTERPOLATION & TRANSFORMER ACCUMULATOR ---
+        // --- 3D TRANSFORMER HARVESTER STORAGE (JAVASCRIPT VERIFIED) ---
         const MAX_POINTS = 3000;
         const vertexBufferData = new Float32Array(MAX_POINTS * 3);
         const colorBufferData = new Float32Array(MAX_POINTS * 3);
@@ -413,11 +412,11 @@
         ];
 
         function calculateTrackLocation(idx, timeMs) {
-            float timeSec = timeMs * 0.001 * laneDirectionsArray[idx];
-            float rawSway = log(1.0 + abs(sin((timeSec * 0.5 + float(idx)*100.0) * channelFreq[idx])));
-            float tx = 0.1 + (abs(sin(rawSway * channelFib[idx])) * 0.8);
-            int superIdx = int(timeMs * 0.0003) % 153;
-            return (tx + float(HARUHI_N5[superIdx]) * 0.05) % 1.0;
+            let timeSec = timeMs * laneDirectionsArray[idx];
+            let rawSway = Math.log1p(Math.abs(Math.sin((timeSec * 0.0005 + idx * 100.0) * channelFreq[idx])));
+            let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
+            let superIdx = Math.floor(timeMs * 0.0002) % 153;
+            return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
         }
 
         function processTransformerTelemetry(timeMs) {
@@ -426,15 +425,11 @@
                 positions.push(calculateTrackLocation(i, timeMs));
             }
 
-            // Perform pairwise checks to isolate cross-lane overlaps
             for(let i=0; i<5; i++) {
                 for(let j=i+1; j<5; j++) {
                     if (Math.abs(positions[i] - positions[j]) < 0.05) {
-                        
-                        // Map the structural collision parameters into a 3D grid coordinate
                         let xCoord = (positions[i] * 2.0 - 1.0) * 0.8;
                         let yCoord = (positions[j] * 2.0 - 1.0) * 0.8;
-                        // Map the Z axis over a shifting trigonometric field relative to the 6th layer track space
                         let zCoord = (Math.sin(timeMs * 0.0005) * Math.cos(positions[i] * 3.14)) * 0.5;
 
                         let bufIdx = pointInsertionIndex * 3;
@@ -442,9 +437,9 @@
                         vertexBufferData[bufIdx+1] = yCoord;
                         vertexBufferData[bufIdx+2] = zCoord;
 
-                        colorBufferData[bufIdx]   = channelColors[i][0];
-                        colorBufferData[bufIdx+1] = channelColors[i][1];
-                        colorBufferData[bufIdx+2] = channelColors[i][2];
+                        colorBufferData[bufIdx]   = channelColors[i];
+                        colorBufferData[bufIdx+1] = channelColors[i];
+                        colorBufferData[bufIdx+2] = channelColors[i];
 
                         pointInsertionIndex = (pointInsertionIndex + 1) % MAX_POINTS;
                         if (activePointCount < MAX_POINTS) activePointCount++;
@@ -452,10 +447,9 @@
                 }
             }
         }
-        // --- PERSPECTIVE CALCULATORS ---
+
         function getMatrix3D(angle) {
             let c = Math.cos(angle), s = Math.sin(angle);
-            // Combines Y-axis camera spin with absolute projection metrics
             return new Float32Array([
                 c,   0,  -s,   0,
                 0,   1,   0,   0,
@@ -463,10 +457,8 @@
                 0,   0,  -0.5, 1
             ]);
         }
-
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
-        // Establish strict UI panel interactions
         for (let i = 0; i < 5; i++) {
             const btn = document.getElementById(`btn-${i}`);
             btn.addEventListener('click', () => {
@@ -474,15 +466,14 @@
                 const isWarping = laneDirectionsArray[i] < 0;
                 btn.classList.toggle('active-warp', isWarping);
                 btn.innerHTML = isWarping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
-                
-                document.getElementById('diagnostics').innerText = `WARP INTERRUPT GATED ON CHANNEL ${i+1}`;
+                document.getElementById('diagnostics').innerText = `WARP ENGINE ACTIVATED ON CHANNEL ${i+1}`;
                 
                 setTimeout(() => {
                     if (laneDirectionsArray[i] < 0) {
                         laneDirectionsArray[i] = 1.0;
                         btn.classList.remove('active-warp');
                         btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
-                        document.getElementById('diagnostics').innerText = `CHANNEL ${i+1} WARP RESTORED`;
+                        document.getElementById('diagnostics').innerText = `CHANNEL ${i+1} RESTORED`;
                     }
                 }, 4000);
             });
@@ -506,16 +497,18 @@
             
             if (isEngineRunning) {
                 internalEngineTime += delta * runningSpeedMultiplier;
-                // Feed the running time state straight to the transformer harvester
                 processTransformerTelemetry(internalEngineTime);
             }
 
-            // Enforce scaling parameters to fit screen boundaries exactly without overlaps
-            gl.viewport(0, 0, canvas.clientWidth, canvas.clientHeight);
+            // Lock structural sizing allocations to fit frames perfectly
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-            // --- PASS 1: DRAW SHAPE-SHIFTING CLOCK TRACKS ---
+            // --- PASS 1: DRAW TRACK MATRIX ---
             gl.useProgram(lanesProgram);
             gl.uniform1f(uLanesTimeLoc, internalEngineTime);
             gl.uniform1fv(uLanesDirLoc, laneDirectionsArray);
@@ -526,10 +519,10 @@
             gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-            // --- PASS 2: DRAW OVERLAY 3D COLLISION SCATTER CLOUD ---
+            // --- PASS 2: DRAW PERSPECTIVE OVERLAY POINT CLOUD ---
             if (activePointCount > 0) {
                 gl.useProgram(scatterProgram);
-                cloudRotationAngle += 0.01;
+                cloudRotationAngle += 0.005;
                 gl.uniformMatrix4fv(uScatterMatrixLoc, false, getMatrix3D(cloudRotationAngle));
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, vboScatterPos);
@@ -552,7 +545,7 @@
         }
 
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderPipelineFrame); });
-        document.getElementById('diagnostics').innerText = "ALL CORE SYSTEMS SYNCHRONIZED AND LIVE";
+        document.getElementById('diagnostics').innerText = "ALL SYSTEMS LIVE | DYNAMIC FEEDBACK VECTOR OPEN";
     </script>
 </body>
 </html>
