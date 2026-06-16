@@ -34,16 +34,15 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 4. Compile Presentation Dashboard Layout
-      # Computes the math vectors and generates our clean visual document matrix layout
+    - name: 4. Compile Dynamic Vector Layout Map
       run: node generate_matrix.js
 
-    - name: 5. Push Realtime Artifacts Straight to Code Tree
+    - name: 5. Push Rasterized Artifacts Straight to Code Tree
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@://github.com'
-        git add matrix_snapshot.html
-        git commit -m "data: auto-update stochastic phase presentation dashboard" || true
+        git add phase_space_chart.png
+        git commit -m "data: auto-render standard format simulation snapshot" || true
         git push
 
     - name: 6. Compile Release Package Metadata
