@@ -13,6 +13,7 @@ stochastic-axis-clock/
 ├── README.md           # Core theoretical blueprint and system documentation
 ├── clock.html          # WebGL2 parallel fragment shader visual simulation
 ├── clock_compare.js    # Multi-channel Node.js atomic reference comparator
+├── diagnose_rtc.js     # Single-channel CPU-to-NTP precision phase profiler
 └── package.json        # Project metadata manifest enabling native ES Modules
 ```
 
@@ -30,8 +31,7 @@ Each of the four base channels operates within its own localized "gravitational 
 The instantaneous phase transformation across the single temporal dimension is governed by the structural state equation:
 
 ```math
-Phase\_Delta_n \(= \ln\left(1 + \left\vert{}\sin\left(System\_Clock \times \omega_n\right)\right\vert{}\right) \times\) F_{index}_n
-```
+\(\text{Phase\_Delta}_n = \ln\left(1 + \left\vert{}\sin\left(\text{System\_Clock} \times \omega_n\right)\right\vert{}\right) \times F_{\{\text{index}_n\}} \%\%\)MAGIT_PARSER_PROTECT%%```
 
 Because the Fibonacci multipliers ($F = [2, 5, 13, 21]$) compress or stretch the temporal field, the channels experience localized time dilation. High-tier nodes (like Channel IV) move through phase coordinates rapidly, simulating a particle traveling at relativistic speeds, while lower tiers anchor the system to a sluggish, dense baseline cadence.
 
@@ -51,8 +51,8 @@ Executes the logarithmic and Fibonacci phase transformations entirely inside the
 - **SDF Geometry:** Uses Signed Distance Fields to morph shapes from sharp rectangles (high acceleration turning points) into smooth circles/diamonds (high-velocity inflection frames).
 - **Temporal Color Vernier Scale:** Shifts neon color spectrums across an independent sine wave, allowing an observer to visually detect rare moments of absolute cross-channel resonance.
 
-### 🕵️‍♂️ 2. Atomic Reference Comparator (`clock_compare.js`)
-An analytical command-line script that tests local hardware execution stability against reality.
+### 🕵️‍♂️ 2. Analytical Diagnostic Pipeline (`clock_compare.js` & `diagnose_rtc.js`)
+Analytical command-line scripts that test local hardware execution stability against reality.
 - **Stratum-1 Calibration:** Queries physical atomic and GPS-disciplined reference clocks (`pool.ntp.org`) over raw UDP socket connections.
 - **Drift Diagnostics:** Uses high-resolution CPU monotonic nanosecond timers to measure network ingestion latency and pinpoint how system microsecond drift impacts individual channel phase metrics.
 
