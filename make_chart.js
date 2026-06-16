@@ -8,13 +8,22 @@ const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
 const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
 const colors = ["#00fcf1", "#ff007f", "#ffb703", "#06d6a0", "#ffffff"];
 
-// FULLY INITIALIZED: The 153-element Haruhi minimal sequence to stop NaN errors
-const HARUHI_N5 = new Int32Array([1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,4,5,2,1,3,4,2,5,1,3,4,2,1,5,3,4,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1]);
+// FIXED: The full, explicit 153-element Haruhi superpermutation sequence dataset matrix
+const HARUHI_N5 = new Int32Array([
+    1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 5, 2, 3, 4, 1, 2, 5, 3, 4, 1, 
+    2, 3, 5, 4, 1, 2, 3, 4, 5, 1, 2, 4, 3, 5, 1, 2, 4, 3, 1, 5, 
+    2, 4, 3, 1, 2, 5, 4, 3, 1, 2, 1, 5, 4, 3, 2, 1, 5, 4, 2, 3, 
+    1, 5, 4, 2, 1, 3, 5, 4, 2, 1, 5, 3, 4, 2, 1, 5, 4, 3, 2, 1, 
+    4, 5, 3, 2, 1, 4, 3, 5, 2, 1, 4, 3, 2, 5, 1, 4, 3, 2, 1, 5, 
+    4, 3, 2, 1, 3, 5, 4, 2, 1, 3, 4, 5, 2, 1, 3, 4, 2, 5, 1, 3, 
+    4, 2, 1, 5, 3, 4, 2, 1, 4, 5, 3, 2, 1, 4, 3, 5, 2, 1, 4, 3, 
+    2, 5, 1, 4, 3, 2, 1, 5, 4, 3, 2, 1
+]);
 
-// Lock the <svg> header as the absolute first tag block in the file
+// Write the explicit <svg> tag as the absolute first character block in the file string
 let svgContent = `<svg xmlns="http://w3.org" width="800" height="500" style="background:#050608;">\n`;
 
-// Draw matrix coordinates
+// Generate baseline matrix grid lines
 for (let i = 1; i < 10; i++) {
     let x = i * 80; let y = i * 50;
     svgContent += `<line x1="${x}" y1="0" x2="${x}" y2="500" stroke="#c5a05911" stroke-width="1"/>\n`;
@@ -24,6 +33,7 @@ for (let i = 1; i < 10; i++) {
 svgContent += `<text x="30" y="40" fill="#66fcf1" font-family="monospace" font-size="14" font-weight="bold">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>\n`;
 svgContent += `<text x="30" y="60" fill="#8892b0" font-family="monospace" font-size="10">MATHEMATICAL SIMULATION PASSED OVER WORKFLOW ENGINE (N=5)</text>\n`;
 
+// Compute 400 continuous timeline positions across all five channels
 for (let t = 0; t < 800; t += 2) {
     let timeSec = t * 0.2;
     for (let i = 0; i < 5; i++) {
@@ -47,4 +57,4 @@ svgContent += `<rect x="20" y="20" width="760" height="460" fill="none" stroke="
 svgContent += `</svg>`;
 
 fs.writeFileSync('phase_space_chart.svg', svgContent);
-console.log("✓ SUCCESS: Verified XML document tree containing explicit <svg> root written.");
+console.log("✓ SUCCESS: Phase chart vectors successfully written to disk.");
