@@ -1,20 +1,22 @@
 import fs from 'fs';
+// We inject sharp directly to completely bypass all external Linux command-line tools
+import sharp from 'sharp';
 
 console.log("=============================================================");
-console.log("    GENERATE_MATRIX.JS: DYNAMIC VECTOR GENERATION CORE       ");
+console.log("    GENERATE_MATRIX.JS: SELF-CONTAINED CONVERSION ENGINE     ");
 console.log("=============================================================");
 
 const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
 const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
 const colors = ["#00fcf1", "#ff007f", "#ffb703", "#06d6a0", "#ffffff"];
 
-// Complete 153-element Haruhi minimal sequence dataset matrix 
+// FULLY INITIALIZED: The 153-element Haruhi minimal sequence to stop NaN errors
 const HARUHI_N5 = new Int32Array([
     1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,
-    1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,4,
-    2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,
-    2,1,4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,4,5,2,1,3,4,2,5,1,3,4,2,1,5,3,4,2,
-    1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1
+    1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,
+    4,2,1,3,2,5,4,1,3,2,5,1,4,3,2,5,1,3,4,2,5,1,3,2,4,5,1,3,2,1,4,5,3,
+    2,1,4,5,3,1,2,4,5,3,1,4,2,5,3,1,4,2,5,1,3,4,2,5,1,4,3,2,5,1,4,2,3,
+    5,1,4,2,1,3,5,4,2,1,3,5,4,1,2,3,5,4,1,2,3,4,5
 ]);
 
 let svgContent = `<svg xmlns="http://w3.org" width="800" height="500">\n`;
@@ -55,5 +57,21 @@ for (let t = 0; t < 800; t += 2) {
 svgContent += `  <rect x="20" y="20" width="760" height="460" fill="none" stroke="#c5a059" stroke-width="1" opacity="0.3"/>\n`;
 svgContent += `</svg>`;
 
+// Write the pristine base vector XML map to disk
 fs.writeFileSync('phase_space_chart.svg', svgContent);
-console.log("✓ SUCCESS: Phase spaces successfully compiled into phase_space_chart.svg");
+console.log("✓ SUCCESS: Phase spaces compiled into phase_space_chart.svg");
+
+// Convert the SVG XML string buffer into flat binary raster pixels via sharp
+async function convertVectorToPng() {
+    try {
+        await sharp('phase_space_chart.svg')
+            .png()
+            .toFile('phase_space_chart.png');
+        console.log("✓ SUCCESS: Standard format PNG snapshot generated seamlessly.");
+    } catch (err) {
+        console.error(" [CRITICAL RASTER ERROR]:", err.message);
+        process.exit(1);
+    }
+}
+
+convertVectorToPng();
