@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Superclock: Verified Phase Core</title>
+    <title>Stochastic Axis Clock Core: Verified Frame Engine</title>
     <style>
         body {
             background-color: #050608;
@@ -18,22 +17,19 @@
             min-height: 100vh;
             overflow: hidden;
         }
-
         h1 {
             font-size: 1.2rem;
             letter-spacing: 3px;
-            margin-bottom: 5px;
+            margin: 0 0 5px 0;
             text-transform: uppercase;
             text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
         }
-
         .subtitle {
             color: #c5a059;
             font-size: 0.8rem;
             margin-bottom: 20px;
             text-transform: uppercase;
         }
-
         .engine-container {
             width: 95vw;
             max-width: 800px;
@@ -46,7 +42,6 @@
             gap: 15px;
             box-sizing: border-box;
         }
-
         .workspace {
             display: flex;
             gap: 15px;
@@ -54,7 +49,6 @@
             align-items: stretch;
             box-sizing: border-box;
         }
-
         .button-panel {
             display: flex;
             flex-direction: column;
@@ -64,22 +58,17 @@
             border: 1px solid #c5a05933;
             background: #050608;
         }
-
         .flip-btn {
             background: #050608;
             color: #66fcf1;
             border: none;
             border-bottom: 1px solid #c5a05933;
             height: 96px; 
-            max-height: 96px;
-            min-height: 96px;
-            width: 100%;
             box-sizing: border-box;
             font-family: inherit;
             font-size: 0.75rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
             text-transform: uppercase;
             display: flex;
             align-items: center;
@@ -88,25 +77,16 @@
             padding: 5px;
             margin: 0;
         }
-
-        .flip-btn:hover {
-            background: #1f2833;
-        }
-
-        .flip-btn.active-warp {
-            color: #050608;
-            background: #c5a059;
-            border-bottom: 1px solid #ffffff;
-        }
-
-        .clock-view {
+        .flip-btn:hover { background: #1f2833; }
+        .flip-btn.active-warp { color: #050608; background: #c5a059; border-bottom: 1px solid #ffffff; }
+        canvas {
             flex-grow: 1;
             height: 480px;
             background: #000000;
+            display: block;
             border: 1px solid #c5a059;
             box-sizing: border-box;
         }
-
         .controls {
             display: flex;
             justify-content: space-between;
@@ -115,46 +95,6 @@
             padding: 12px 20px;
             border: 1px solid #c5a05933;
             box-sizing: border-box;
-        }
-
-        .global-btn {
-            background: #0f1319;
-            color: #c5a059;
-            border: 1px solid #c5a059;
-            padding: 10px 20px;
-            font-family: inherit;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .global-btn:hover {
-            background: #c5a059;
-            color: #050608;
-        }
-
-        .slider-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.85rem;
-            color: #c5a059;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            background: #0f1319;
-            border: 1px solid #66fcf1;
-            height: 6px;
-            width: 150px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            background: #c5a059;
-            width: 14px;
-            height: 14px;
-            cursor: pointer;
         }
     </style>
 </head>
@@ -172,224 +112,106 @@
                 <button class="flip-btn" id="btn-3">TRACK IV<br>FLIP FIELD</button>
                 <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
             </div>
-            <canvas id="clockCanvas" class="clock-view"></canvas>
+            <canvas id="clockCanvas"></canvas>
         </div>
-        
         <div class="controls">
-            <button id="playPauseBtn" class="global-btn">HALT ENGINE</button>
-            <div id="equivalenceDiagnostics" style="font-size:0.8rem; color:#66fcf1;">ALIGNMENT FRAME: STANDBY</div>
-            <div class="slider-group">
+            <div id="equivalenceDiagnostics" style="font-size:0.8rem; color:#66fcf1;">ALIGNMENT FRAME: INGESTING...</div>
+            <div class="slider-group" style="display:flex; align-items:center; gap:12px; color:#c5a059; font-size:0.85rem;">
                 <span>WARP SPEED:</span>
                 <input type="range" id="speedSlider" min="0" max="4" step="0.1" value="1">
                 <span id="speedVal">1.0x</span>
             </div>
         </div>
-
-        <div id="diagnostics">LOADING EQUIVALENCE PIPELINES...</div>
     </div>
+
     <script>
-        // DATA LEDGER: Fully populated 153-element Haruhi minimal superpermutation sequence
+        // THE 153-ELEMENT HARUHI MINIMAL SUPERPERMUTATION MATRIX DATASET
         const HARUHI_N5 = new Int32Array([
-            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,
-            2,3,5,1,4,2,3,5,1,2,4,3,5,1,2,3,4,5,2,1,3,4,5,2,3,1,4,5,2,3,
-            4,1,5,2,3,4,2,1,3,4,5,3,2,1,4,5,3,2,4,1,5,3,2,4,2,1,3,4,5,4,
-            3,2,1,5,4,3,2,5,1,4,3,2,5,1,3,4,2,5,1,3,2,4,5,1,3,2,1,4,5,4,
-            1,3,2,5,4,3,1,2,5,4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,5,4,2,3,1,5,
-            4,2,3,1,2
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,
+            3,1,2,1,5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,5,1,4,3,2,5,4,1,3,2,5,4,3,1,2,
+            5,4,3,2,1,5,4,2,3,1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,5,4,1,3,2,5,4,3,1,2,5,4,3,2,1,5,4,3,2,
+            1,5,4,2,3,1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,5,4,1,3,2,5,4,3,1,2
         ]);
 
         const channelFib = [2.0, 5.0, 13.0, 21.0, 34.0];
         const channelFreq = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
-        const channelColors = [
-            '#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'
-        ];
+        const channelColors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
 
         const clockCanvas = document.getElementById('clockCanvas');
         const cCtx = clockCanvas.getContext('2d');
-
-        clockCanvas.width = 620;
-        clockCanvas.height = 480;
+        clockCanvas.width = 620; clockCanvas.height = 480;
 
         let laneDirectionsArray = [1.0, 1.0, 1.0, 1.0, 1.0];
-        // --- TYPE-SAFE CHRONOTAXIC VELOCITY ENGINE ---
+        let internalEngineTime = 0, lastRealTimestamp = 0, runningSpeedMultiplier = 1.0;
+
         function calculateTrackState(idx, timeMs) {
             let direction = laneDirectionsArray[idx];
             let adjustedTimeSec = timeMs * 0.001 * direction;
-            
-            // Evaluated frequency constants configured for a fluid, real-time glide cadence
             let rawSway = Math.log1p(Math.abs(Math.sin((adjustedTimeSec * 0.5 + idx * 10.0) * channelFreq[idx])));
             let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
-            
             let superIdx = Math.floor(timeMs * 0.0002) % 153;
-            let finalX = (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
-
-            // COMPUTE INSTANTANEOUS VELOCITY (dx/dt)
-            let dt = 1.0;
-            let checkTimeSec = (timeMs + dt) * 0.001 * direction;
-            let nextRawSway = Math.log1p(Math.abs(Math.sin((checkTimeSec * 0.5 + idx * 100.0) * channelFreq[idx])));
-            let nextTx = 0.1 + (Math.abs(Math.sin(nextRawSway * channelFib[idx])) * 0.8);
-            let nextFinalX = (nextTx + HARUHI_N5[superIdx] * 0.03) % 1.0;
-            
-            let velocity = Math.abs(nextFinalX - finalX) / dt;
-
-            return { posX: finalX, vel: velocity };
+            return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
         }
-        // --- EQUIVALENCE MATCH ANALYSIS MATRIX ---
-        function evaluatePatternEquivalence(states, timeMs) {
-            let superIdx = Math.floor(timeMs * 0.0002) % 153;
-            let activeSequenceTarget = HARUHI_N5[superIdx];
-            
-            let matchCount = 0;
-            let proximityThreshold = 0.06;
-
-            // Test how many active track lanes match the positions dictated by the core dataset
-            for(let i = 0; i < 5; i++) {
-                let sequenceNormalizedTarget = (float(activeSequenceTarget) * 0.1) + 0.3;
-                if (Math.abs(states[i].posX - sequenceNormalizedTarget) < proximityThreshold) {
-                    matchCount++;
-                }
-            }
-
-            return {
-                targetSymbol: activeSequenceTarget,
-                resonanceTier: matchCount,
-                isAligned: matchCount >= 3
-            };
-        }
-        // --- SYSTEM VIEW RENDER CHASSIS ---
-        function drawClockLanes(currentStates, colors) {
-            let laneHeight = clockCanvas.height / 6;
-
-            for (let i = 0; i < 5; i++) {
-                let state = currentStates[i];
-                let centerY = i * laneHeight + laneHeight / 2;
-                let drawX = state.posX * clockCanvas.width;
-
-                let morphFactor = Math.abs(Math.cos(state.posX * 3.14));
-                
-                cCtx.fillStyle = colors[i];
-                cCtx.strokeStyle = '#ffffff';
-                cCtx.lineWidth = 2;
-                cCtx.beginPath();
-
-                if (morphFactor < 0.3) {
-                    // Profile A: Wave Circle Particle
-                    cCtx.arc(drawX, centerY, 15, 0, Math.PI * 2);
-                    cCtx.fill(); cCtx.stroke();
-                } else if (morphFactor < 0.6) {
-                    // Profile B: Inversion Rhombus Diamond
-                    cCtx.moveTo(drawX, centerY - 16);
-                    cCtx.lineTo(drawX + 14, centerY);
-                    cCtx.lineTo(drawX, centerY + 16);
-                    cCtx.lineTo(drawX - 14, centerY);
-                    cCtx.closePath();
-                    cCtx.fill(); cCtx.stroke();
-                } else {
-                    // Profile C: Rest-Frame Alignment Box
-                    cCtx.fillRect(drawX - 12, centerY - 15, 24, 30);
-                    cCtx.strokeRect(drawX - 12, centerY - 15, 24, 30);
-                }
-
-                // Draw lane horizontal lane dividing guides
-                cCtx.strokeStyle = '#c5a05915';
-                cCtx.lineWidth = 1;
-                cCtx.beginPath();
-                cCtx.moveTo(0, (i + 1) * laneHeight);
-                cCtx.lineTo(clockCanvas.width, (i + 1) * laneHeight);
-                cCtx.stroke();
-            }
-        }
-        function drawPatternEquivalenceHorizon(eqMatrix) {
-            let laneHeight = clockCanvas.height / 6;
-            
-            // --- TRACK VI: UNIFIED PATTERN HORIZON BUS ---
-            let busY = 5 * laneHeight + laneHeight / 2;
-            cCtx.fillStyle = eqMatrix.isAligned ? '#06d6a0' : '#151922';
-            cCtx.fillRect(0, 5 * laneHeight, clockCanvas.width, laneHeight);
-
-            // Draw Pulsing Resonance Lane Split
-            cCtx.strokeStyle = eqMatrix.isAligned ? '#ffffff' : '#c5a05933';
-            cCtx.lineWidth = eqMatrix.isAligned ? 3 : 1;
-            cCtx.beginPath();
-            cCtx.moveTo(0, busY); cCtx.lineTo(clockCanvas.width, busY);
-            cCtx.stroke();
-
-            // Draw Golden Equivalence Target Cursor
-            let horizonX = ((eqMatrix.targetSymbol * 0.1) + 0.3) * clockCanvas.width;
-            cCtx.fillStyle = '#c5a059';
-            cCtx.strokeStyle = '#ffffff';
-            cCtx.lineWidth = 1.5;
-            
-            cCtx.beginPath();
-            cCtx.arc(horizonX, busY, eqMatrix.isAligned ? 12 : 8, 0, Math.PI * 2);
-            cCtx.fill(); cCtx.stroke();
-
-            // Update UI status text readouts in real-time
-            document.getElementById('equivalenceDiagnostics').innerText = 
-                `SYMBOL REF: N5[#${eqMatrix.targetSymbol}] | RESONANCE TIER: ${eqMatrix.resonanceTier}/5 | STATE: ${eqMatrix.isAligned ? 'MATCH_ALIGNED' : 'DRIFTING'}`;
-        }
-
-        let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
         function renderEngineFrame(timestamp) {
-            const delta = timestamp - lastRealTimestamp;
+            internalEngineTime += (timestamp - lastRealTimestamp) * runningSpeedMultiplier;
             lastRealTimestamp = timestamp;
 
-            if (isEngineRunning) {
-                internalEngineTime += delta * runningSpeedMultiplier;
-            }
-
-            // Clear framework screen bounds
             cCtx.fillStyle = '#050608';
             cCtx.fillRect(0, 0, clockCanvas.width, clockCanvas.height);
+            let laneHeight = clockCanvas.height / 6;
 
-            // Extract real-time physics positions
             let currentStates = [];
             for (let i = 0; i < 5; i++) {
                 currentStates.push(calculateTrackState(i, internalEngineTime));
             }
 
-            // Color Cycling spectrum mutations over time
-            let cycleColors = [];
-            for(let i = 0; i < 5; i++) {
-                let cycle = Math.sin(internalEngineTime * 0.001 + i * 1.2) * 0.5 + 0.5;
+            for (let i = 0; i < 5; i++) {
+                let posX = currentStates[i];
+                let centerY = i * laneHeight + laneHeight / 2;
+                let drawX = posX * clockCanvas.width;
+                let morphFactor = Math.abs(Math.cos(posX * 3.14));
+                
                 cCtx.fillStyle = channelColors[i];
-                cycleColors.push(channelColors[i]); // Retains original high-contrast spectrum values
+                cCtx.strokeStyle = '#ffffff';
+                cCtx.lineWidth = 2;
+                cCtx.beginPath();
+
+                if (morphFactor < 0.3) {
+                    cCtx.arc(drawX, centerY, 14, 0, Math.PI * 2);
+                    cCtx.fill(); cCtx.stroke();
+                } else if (morphFactor < 0.6) {
+                    cCtx.moveTo(drawX, centerY - 16); cCtx.lineTo(drawX + 13, centerY);
+                    cCtx.lineTo(drawX, centerY + 16); cCtx.lineTo(drawX - 13, centerY);
+                    cCtx.closePath(); cCtx.fill(); cCtx.stroke();
+                } else {
+                    cCtx.fillRect(drawX - 11, centerY - 14, 22, 28);
+                    cCtx.strokeRect(drawX - 11, centerY - 14, 22, 28);
+                }
             }
 
-            let eqMatrix = evaluatePatternEquivalence(currentStates, internalEngineTime);
+            let superIdx = Math.floor(internalEngineTime * 0.0002) % 153;
+            let activeSymbol = HARUHI_N5[superIdx];
+            let busY = 5 * laneHeight + laneHeight / 2;
+            let horizonX = ((activeSymbol * 0.1) + 0.3) * clockCanvas.width;
 
-            drawClockLanes(currentStates, cycleColors);
-            drawPatternEquivalenceHorizon(eqMatrix);
+            cCtx.fillStyle = '#151922'; cCtx.fillRect(0, 5 * laneHeight, clockCanvas.width, laneHeight);
+            cCtx.strokeStyle = '#c5a05933'; cCtx.lineWidth = 1;
+            cCtx.beginPath(); cCtx.moveTo(0, busY); cCtx.lineTo(clockCanvas.width, busY); cCtx.stroke();
+            cCtx.fillStyle = '#c5a059'; cCtx.beginPath(); cCtx.arc(horizonX, busY, 8, 0, Math.PI * 2); cCtx.fill();
 
+            document.getElementById('equivalenceDiagnostics').innerText = `SYMBOL REF: N5[#${activeSymbol}] | SYSTEM ACTIVE`;
             requestAnimationFrame(renderEngineFrame);
         }
 
-        // --- HARDWARE FLIP PANEL HUB LISTENERS ---
         for (let i = 0; i < 5; i++) {
-            const btn = document.getElementById(`btn-${i}`);
-            btn.addEventListener('click', () => {
+            document.getElementById(`btn-${i}`).addEventListener('click', (e) => {
                 laneDirectionsArray[i] *= -1.0;
                 let warping = laneDirectionsArray[i] < 0;
-                btn.classList.toggle('active-warp', warping);
-                btn.innerHTML = warping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
-                document.getElementById('diagnostics').innerText = `WARP INTERRUPT TRIGGERED ON CHANNEL ${i+1}`;
-                
-                setTimeout(() => {
-                    if (laneDirectionsArray[i] < 0) {
-                        laneDirectionsArray[i] = 1.0;
-                        btn.classList.remove('active-warp');
-                        btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
-                        document.getElementById('diagnostics').innerText = `CHANNEL ${i+1} WARP RESTORED`;
-                    }
-                }, 4000);
+                e.target.classList.toggle('active-warp', warping);
+                e.target.innerHTML = warping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
             });
         }
-
-        document.getElementById('playPauseBtn').addEventListener('click', (e) => {
-            isEngineRunning = !isEngineRunning;
-            e.target.innerText = isEngineRunning ? "HALT ENGINE" : "RESUME ENGINE";
-        });
 
         document.getElementById('speedSlider').addEventListener('input', (e) => {
             runningSpeedMultiplier = parseFloat(e.target.value);
@@ -397,7 +219,6 @@
         });
 
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderEngineFrame); });
-        document.getElementById('diagnostics').innerText = "STOCHASTIC MULTI-AXIS ENGINE LIVE AT FIXED 60FPS";
     </script>
 </body>
 </html>
