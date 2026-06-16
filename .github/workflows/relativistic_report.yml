@@ -16,44 +16,12 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 2. Initialize Node.js High-Precision Runtime Environment
-      # FIXED: Swapped out the typo action for the official repository setup action
       uses: actions/setup-node@v4
       with:
         node-version: 20
 
-    - name: 3. Provision Core Headless Browser Dependencies
-      run: |
-        npm init -y
-        npm install playwright canvas
-        npx playwright install chromium --with-deps
-
-    - name: 4. Execute Headless Visual Capture Engine
-      run: |
-        node -e "
-        import { chromium } from 'playwright';
-        import fs from 'fs';
-
-        async function captureSimulation() {
-          const browser = await chromium.launch();
-          const page = await browser.newPage();
-          const url = 'file://' + process.cwd() + '/superclock.html';
-          console.log('Ingesting visual canvas tracks via:', url);
-          
-          await page.setViewportSize({ width: 1000, height: 600 });
-          await page.goto(url);
-          
-          console.log('Allowing Fibonacci loops to settle and accelerate for 5000ms...');
-          await page.waitForTimeout(5000);
-          
-          await page.screenshot({ path: 'output_superclock_frame.png', fullPage: true });
-          console.log('High-contrast shader snapshot stored successfully.');
-          
-          await browser.close();
-        }
-        captureSimulation();
-        "
-
-    - name: 5. Execute Host Analytical Profilers
+    - name: 3. Execute Host Analytical Profilers
+      # Runs your zero-allocation validation tools and writes terminal logs straight to disk
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
         node combinatorial_core.js >> analytical_report.log &
@@ -67,19 +35,19 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 6. Generate Detailed Mathematical Phase Scatter Plots (SVG Vector Shapes)
-      # UPGRADED: Generates intricate geometric waveforms mapping out the phase space boundaries
+    - name: 4. Generate Detailed Mathematical Phase Scatter Plots (SVG Vector Shapes)
+      # Simulates the superclock trajectories directly on the server to output high-fidelity shapes
       run: |
         node -e "
         import fs from 'fs';
 
-        const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
-        const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
+        const chFib = [2.0, 5.0, 13.0, 21.0, 34.0];
+        const chFreq = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
         const colors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
 
         let svgContent = '<svg width=\"800\" height=\"500\" xmlns=\"http://w3.org\" style=\"background:#050608;\">';
         
-        // Add futuristic matrix grid background guidelines
+        // Render cybernetic background grid matrices
         for (let i = 1; i < 10; i++) {
           let x = i * 80;
           let y = i * 50;
@@ -87,48 +55,45 @@ jobs:
           svgContent += \`<line x1=\"0\" y1=\"\${y}\" x2=\"800\" y2=\"\${y}\" stroke=\"#c5a05911\" stroke-width=\"1\"/>\`;
         }
 
-        svgContent += '<text x=\"30\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\">STOCHASTIC PHASE VARIANCE LANDSCAPE</text>';
-        svgContent += '<text x=\"30\" y=\"60\" fill=\"#8892b0\" font-family=\"monospace\" font-size=\"10\">MODEL: FIBONACCI SWAY LAYER (N=5)</text>';
+        svgContent += '<text x=\"30\" y=\"40\" fill=\"#66fcf1\" font-family=\"monospace\" font-size=\"14\" font-weight=\"bold\">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>';
+        svgContent += '<text x=\"30\" y=\"60\" fill=\"#8892b0\" font-family=\"monospace\" font-size=\"10\">MATHEMATICAL SIMULATION PASSED OVER WORKFLOW ENGINE (N=5)</text>';
 
-        // Programmatically plot hundreds of intersecting vector shapes representing wave collisions
+        // Generate 400 iterative computational timeline iterations
         for (let t = 0; t < 800; t += 2) {
-          let timeSec = t * 0.1;
+          let timeSec = t * 0.2; 
           
           for (let i = 0; i < 5; i++) {
-            // Replicate the Logarithmic Sway position tracking math
+            // Compute true Logarithmic Sway mechanics direct from the mathematical blueprint
             let rawSway = Math.log1p(Math.abs(Math.sin(timeSec * chFreq[i] * 3.0)));
             let posX = 0.1 + (Math.abs(Math.sin(rawSway * chFib[i])) * 0.8);
             
-            // Map the calculated positions cleanly onto the 800x500 pixel canvas window boundaries
+            // Project vectors cleanly onto our 800x500 pixel coordinate plane
             let plotX = posX * 740 + 30;
-            let plotY = 460 - (Math.log1p(chFib[i]) * 110) + (Math.sin(timeSec * 0.5) * 15);
+            let plotY = 440 - (Math.log1p(chFib[i]) * 100) + (Math.sin(timeSec * 0.4) * 12);
 
-            // Alternate shapes between circles and diamonds depending on wave trajectory phases
-            if (t % 12 === 0) {
-              // Draw an intricate vector diamond rhombus shape node
-              svgContent += \`<polygon points=\"\${plotX},\${plotY-6} \${plotX+5},$\{plotY} \${plotX},\${plotY+6} \${plotX-5},\${plotY}\" fill=\"none\" stroke=\"\${colors[i]}\" stroke-width=\"1.5\" opacity=\"0.7\"/>\`;
+            // Morph geometric nodes between circles and diamond polygons depending on trajectory phases
+            if (t % 10 === 0) {
+              svgContent += \`<polygon points=\"\${plotX},\${plotY-6} \${plotX+5},\${plotY} \${plotX},\${plotY+6} \${plotX-5},\${plotY}\" fill=\"none\" stroke=\"\${colors[i]}\" stroke-width=\"1.2\" opacity=\"0.6\"/>\`;
             } else {
-              // Draw a standard circular coordinate tracking orbital dot
-              svgContent += \`<circle cx=\"\${plotX}\" cy=\"\${plotY}\" r=\"2.5\" fill=\"\${colors[i]}\" opacity=\"0.5\"/>\`;
+              svgContent += \`<circle cx=\"\${plotX}\" cy=\"\${plotY}\" r=\"2\" fill=\"\${colors[i]}\" opacity=\"0.4\"/>\`;
             }
           }
         }
 
-        // Add bounding axis indicator outline boundaries
         svgContent += '<rect x=\"20\" y=\"20\" width=\"760\" height=\"460\" fill=\"none\" stroke=\"#c5a05933\" stroke-width=\"1\"/>';
         svgContent += '</svg>';
 
         fs.writeFileSync('phase_space_chart.svg', svgContent);
-        console.log('Detailed math vector chart successfully compiled.');
+        console.log('Detailed structural math shapes successfully compiled.');
         "
 
-    - name: 7. Compile Release Package Metadata
+    - name: 5. Compile Release Package Metadata
       id: get_version
       run: |
         echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
         echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
-    - name: 8. Package Relativistic Assets and Push GitHub Release
+    - name: 6. Package Relativistic Assets and Push GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.get_version.outputs.version }}
@@ -136,16 +101,14 @@ jobs:
         body: |
           ## 🌌 Stochastic Axis Clock Matrix Automation Report
           
-          Automated compilation and simulation pass executed successfully inside the GitHub Actions Runner infrastructure.
+          Automated mathematical simulation and calculation pass executed successfully inside the GitHub Actions Runner infrastructure.
           
           - **Execution Timestamp:** `${{ steps.get_version.outputs.timestamp }}`
           - **Commit Node Anchor:** `${{ github.sha }}`
           
           ### Included Phase Diagnostic Outputs:
-          1. `output_superclock_frame.png` - Real-time visual snapshot capturing current Lorentz shape-morph profiles.
-          2. `phase_space_chart.svg` - Programmatic vector shape asset rendering the five channel trajectories concurrently.
-          3. `analytical_report.log` - Raw nanosecond timing profiles capturing hardware drift relative to the atomic reference.
+          1. `phase_space_chart.svg` - Highly-detailed programmatic vector chart mapping the geometric waveforms and lane crossovers.
+          2. `analytical_report.log` - Raw nanosecond timing logs capturing hardware drift relative to the atomic reference.
         files: |
-          output_superclock_frame.png
           phase_space_chart.svg
           analytical_report.log
