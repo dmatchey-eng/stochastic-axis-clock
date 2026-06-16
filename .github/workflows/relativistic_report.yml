@@ -20,7 +20,11 @@ jobs:
       with:
         node-version: 20
 
-    - name: 3. Execute Host Analytical Profilers
+    - name: 3. Provision Isolated Node Dependencies
+      # Explicitly updates sharp to manage in-memory vector-to-png compilation
+      run: npm install sharp
+
+    - name: 4. Execute Host Analytical Profilers
       run: |
         echo '=== STARTING COMBINATORIAL SAMPLING ENGINE ===' > analytical_report.log
         node combinatorial_core.js >> analytical_report.log &
@@ -34,10 +38,12 @@ jobs:
         sleep 6
         kill $PID_COMP
 
-    - name: 4. Compile Dynamic Vector Layout Map
+    - name: 5. Execute Self-Contained Simulation & Image Conversion
+      # Triggers generate_matrix.js to compute coordinates and output both files natively
       run: node generate_matrix.js
 
-    - name: 5. Push Rasterized Artifacts Straight to Code Tree
+    - name: 6. Push Rasterized Artifacts Straight to Code Tree
+      # Fixed: Tracks and commits phase_space_chart.png securely into your repository tree
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@://github.com'
@@ -45,20 +51,22 @@ jobs:
         git commit -m "data: auto-render standard format simulation snapshot" || true
         git push
 
-    - name: 6. Compile Release Package Metadata
+    - name: 7. Compile Release Package Metadata
       id: get_version
       run: |
         echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
         echo "timestamp=$(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
 
-    - name: 7. Package Relativistic Assets and Push GitHub Release
+    - name: 8. Package Relativistic Assets and Push GitHub Release
+      # Fixed: Attaches the .png image file and the logs to the Release deployment package
       uses: softprops/action-gh-release@v2
       with:
         tag_name: "v1.0.${{ github.run_number }}"
         name: Relativistic Telemetry Metrics - Release v1.0.${{ github.run_number }}
         body: |
           ## 🌌 Stochastic Axis Clock Matrix Automation Report
+          - **Execution Timestamp:** `${{ steps.get_version.outputs.timestamp }}`
           - **Commit Node Anchor:** `${{ github.sha }}`
         files: |
-          matrix_snapshot.html
+          phase_space_chart.png
           analytical_report.log
