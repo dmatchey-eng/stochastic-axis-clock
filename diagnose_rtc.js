@@ -1,34 +1,31 @@
 import dgram from 'dgram';
 
-// --- CONFIGURATION TARGETS ---
-const ATOMIC_NTP_SERVER = 'pool.ntp.org'; // Direct connection line to Stratum-1 Atomic reference clocks
+const ATOMIC_NTP_SERVER = 'pool.ntp.org';
 const NTP_PORT = 123;
-const SAMPLE_INTERVAL_MS = 2000; // Poll the clock array every 2 seconds
+const SAMPLE_INTERVAL_MS = 2000; 
 
-// Bounded Truncated Fibonacci Progression Array matching the UI architecture
-const TRUNCATED_FIB =;
-const BASE_FREQUENCY = 0.0012; // Mapped to the Magenta track for baseline tracking
+const HARUHI_N5_STRING = new Int32Array([
+    1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,4,
+    5,3,1,2,4,3,5,1,4,2,3,5,1,4,2,3,1,5,4,2,3,1,4,5,2,3,1,4,2,5,3,1,4,2,3,5,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1,
+    4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,1,2,5,4,3,1,5,2,4,3,1,5,4,2,3,1,5,4,3,2,1,5,4,3,1,2,5,4,3
+]);
+
+const TARGET_FIB = 5.0;  // Benchmarked to the Magenta lane
+const TARGET_FREQ = 0.0012;
 
 console.log("=============================================================");
-console.log("  ATOMIC RTC DRIFT ENGINE DETECTOR INTERFACE ONWARDS ");
+console.log("    DIAGNOSE_RTC.JS: MONOTONIC CPU PHASE DRIFT DETECTOR      ");
 console.log("=============================================================");
-console.log(`Connecting to Atomic Reference Array via: ${ATOMIC_NTP_SERVER}`);
 
-/**
- * Dispatches a raw UDP packet to query an atomic NTP reference epoch.
- * Uses the low-level NTP timestamp format (seconds since Jan 1 1900).
- */
 function fetchAtomicTime() {
     return new Promise((resolve, reject) => {
         const client = dgram.createSocket('udp4');
         const ntpData = Buffer.alloc(48);
-        
-        // Set NTP Client Mode configuration flags in the first byte
         ntpData[0] = 0x1B; 
 
         const timeout = setTimeout(() => {
             client.close();
-            reject(new Error("Atomic clock connection timed out."));
+            reject(new Error("Timeout connecting to stratum reference."));
         }, 1500);
 
         client.send(ntpData, 0, ntpData.length, NTP_PORT, ATOMIC_NTP_SERVER, (err) => {
@@ -42,65 +39,49 @@ function fetchAtomicTime() {
         client.on('message', (msg) => {
             clearTimeout(timeout);
             client.close();
-
-            // Extract the transmit timestamp fields from bytes 40-43
             const secPart = msg.readUInt32BE(40);
             const fracPart = msg.readUInt32BE(44);
-
-            // Convert raw NTP seconds (starting 1900) to standard Unix Epoch MS (starting 1970)
             const ntpEpochDelta = 2208988800;
             const unixSeconds = secPart - ntpEpochDelta;
             const milliseconds = Math.round((fracPart / 0x100000000) * 1000);
-            
-            const atomicEpochMS = (unixSeconds * 1000) + milliseconds;
-            resolve(atomicEpochMS);
+            resolve((unixSeconds * 1000) + milliseconds);
         });
     });
 }
 
-// --- MAIN RUNTIME ANALYSIS MATRIX ---
-async function runAnalysisCycle() {
+async function verifyClockAccuracy() {
     try {
-        // 1. Gather high-resolution internal CPU monotonic cycle time (Nanoseconds)
-        const cpuStartNanoseconds = process.hrtime.bigint();
+        const startNs = process.hrtime.bigint();
+        const atomicTimeMS = await fetchAtomicTime();
+        const endNs = process.hrtime.bigint();
 
-        // 2. Query the absolute physical atomic clock state over the wire
-        const atomicTimestampMS = await fetchAtomicTime();
-        
-        // 3. Capture the CPU time again immediately after network ingestion finishes
-        const cpuEndNanoseconds = process.hrtime.bigint();
-        const networkLatencyMS = Number(cpuEndNanoseconds - cpuStartNanoseconds) / 1000000;
+        const latencyMS = Number(endNs - startNs) / 1000000;
+        const localTimeMS = Date.now();
+        const driftMS = localTimeMS - atomicTimeMS;
+        const timelineSec = Number(endNs / 1000000000n);
 
-        // 4. Calculate the execution time of the WebGL mathematical math function using the atomic state
-        // Simulate how much the clock has warped since execution started
-        const simulatedTimestamp = Number(cpuEndNanoseconds / 1000000000n); 
-        const rawLogSway = Math.log1p(Math.abs(Math.sin(simulatedTimestamp * BASE_FREQUENCY)));
-        const structuralPhaseDelta = rawLogSway * TRUNCATED_FIB[1]; // Evaluated against Track II
+        // Compute localized phase metrics matching the exact visual math equations
+        const rawSway = Math.log1p(Math.abs(Math.sin(timelineSec * TARGET_FREQ * 3.0)));
+        let tx = 0.1 + (Math.abs(Math.sin(rawSway * TARGET_FIB)) * 0.8);
+        const superIdx = Math.floor(timelineSec * 0.2) % 153;
+        const phaseDeltaRad = (tx + HARUHI_N5_STRING[superIdx] * 0.03) % 1.0;
 
-        // 5. Compute structural alignment and tracking offsets
-        // Track the drift between the local computer clock and the true atomic epoch clock
-        const localSystemTimeMS = Date.now();
-        const absoluteDriftMS = localSystemTimeMS - atomicTimestampMS;
+        console.log(`\n[RTC TIMESTAMP -> ${new Date().toISOString()}]`);
+        console.log(` -> Net Ingestion Delay  : ${latencyMS.toFixed(3)} ms`);
+        console.log(` -> Atomic UTC Baseline  : ${atomicTimeMS} ms`);
+        console.log(` -> Hardware Sync Offset : ${driftMS > 0 ? '+' : ''}${driftMS} ms`);
+        console.log(` -> Mapped Phase Delta   : ${phaseDeltaRad.toFixed(14)} rad`);
 
-        console.log(`\n[TIMESTAMP: ${new Date().toISOString()}]`);
-        console.log(` -> Network Ingestion Latency : ${networkLatencyMS.toFixed(3)} ms`);
-        console.log(` -> Pure Atomic RTC Baseline  : ${atomicTimestampMS} ms`);
-        console.log(` -> Local Host Grid Time      : ${localSystemTimeMS} ms`);
-        console.log(` -> Clock Sync Offset (Drift) : ${absoluteDriftMS > 0 ? '+' : ''}${absoluteDriftMS} ms`);
-        console.log(` -> Simulated Phase Sway Delta: ${structuralPhaseDelta.toFixed(6)} rad`);
-
-        if (Math.abs(absoluteDriftMS) > 30) {
-            console.log(" ! WARNING: Host system clock is drifting from the atomic baseline.");
-            console.log("   The WebGL canvas is calculating mathematical positions using an unstable clock source.");
+        if (Math.abs(driftMS) > 30) {
+            console.log(" ⚠️ ALERT: Local clock is drifting. Real-time shader vectors will destabilize.");
         } else {
-            console.log(" ✓ STATUS: Clock drift is inside safe bounds. The mathematical engine is properly anchored.");
+            console.log(" ✓ STATUS: Clock grid stable. Processing phase anchored correctly.");
         }
 
     } catch (error) {
-        console.error(" [CRITICAL ERROR]: Could not read time state matrix:", error.message);
+        console.error(" [DATA ERROR]: Could not parse hardware timing cycles:", error.message);
     }
 }
 
-// Execute the comparison loop continuously at the designated interval
-setInterval(runAnalysisCycle, SAMPLE_INTERVAL_MS);
-runAnalysisCycle();
+setInterval(verifyClockAccuracy, SAMPLE_INTERVAL_MS);
+verifyClockAccuracy();
