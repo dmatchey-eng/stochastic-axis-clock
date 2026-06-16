@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stochastic Superclock: Relativistic Warp Array</title>
+    <title>Stochastic Superclock: Dedicated Control Panel</title>
     <style>
         body {
             background-color: #050608;
@@ -36,23 +36,67 @@
 
         .engine-container {
             width: 95vw;
-            max-width: 900px;
+            max-width: 950px;
             background: #0f1319;
-            border: 1px solid #66fcf1;
+            border: 1px solid #c5a059;
             padding: 15px;
-            box-shadow: 0 0 30px rgba(102, 252, 241, 0.15);
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.15);
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        canvas {
+        /* Flex assembly to pair buttons flatly against the canvas tracks */
+        .workspace {
+            display: flex;
+            gap: 15px;
             width: 100%;
+        }
+
+        .button-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 0px; 
+            width: 140px;
+            height: 480px; /* Synchronized to canvas footprint */
+        }
+
+        .flip-btn {
+            background: #050608;
+            color: #66fcf1;
+            border: 1px solid #66fcf133;
+            height: 80px; /* Sets perfect sizing bounds matching the 6-lane canvas layout ratio */
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flip-btn:hover {
+            border-color: #66fcf1;
+            background: #1f2833;
+            box-shadow: inset 0 0 10px rgba(102, 252, 241, 0.2);
+        }
+
+        .flip-btn.active-warp {
+            color: #050608;
+            background: #c5a059;
+            border-color: #ffffff;
+            text-shadow: none;
+        }
+
+        canvas {
+            flex-grow: 1;
             height: 480px; 
             background: #000000;
             display: block;
-            border: 2px solid #c5a059;
-            cursor: crosshair;
+            border: 1px solid #c5a059;
         }
 
         .controls {
@@ -64,7 +108,7 @@
             border: 1px solid #c5a05933;
         }
 
-        button {
+        .global-btn {
             background: #0f1319;
             color: #c5a059;
             border: 1px solid #c5a059;
@@ -73,13 +117,11 @@
             cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
-            transition: all 0.2s;
         }
 
-        button:hover {
+        .global-btn:hover {
             background: #c5a059;
             color: #050608;
-            box-shadow: 0 0 12px rgba(197, 160, 89, 0.6);
         }
 
         .slider-group {
@@ -104,7 +146,6 @@
             width: 16px;
             height: 16px;
             cursor: pointer;
-            border: 1px solid #050608;
         }
 
         #diagnostics {
@@ -118,13 +159,23 @@
 <body>
 
     <h1>STOCHASTIC SUPERCLOCK CORE</h1>
-    <div class="subtitle">Geometric Morphing & Undisclosed Intersect Inversion</div>
+    <div class="subtitle">Hardware Controller Array & Geometric Phase Distortion Matrix</div>
 
     <div class="engine-container">
-        <canvas id="glCanvas"></canvas>
+        <div class="workspace">
+            <!-- Left Side Control Column aligning perfectly to individual execution lanes -->
+            <div class="button-panel">
+                <button class="flip-btn" id="btn-0">TRACK I<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-1">TRACK II<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-2">TRACK III<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-3">TRACK IV<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
+            </div>
+            <canvas id="glCanvas"></canvas>
+        </div>
         
         <div class="controls">
-            <button id="playPauseBtn">HALT FIELD</button>
+            <button id="playPauseBtn" class="global-btn">HALT FIELD</button>
             
             <div class="slider-group">
                 <span>CHRONO WARP SPEED:</span>
@@ -133,7 +184,7 @@
             </div>
         </div>
 
-        <div id="diagnostics">WARP MATRIX INTEGRATED | GEOMETRY: SDF_MORPH</div>
+        <div id="diagnostics">GPU HARDWARE SYNC ACTIVE | MODE: CONTROL_PANEL</div>
     </div>
     <script>
         const vsSource = `#version 300 es
@@ -155,10 +206,10 @@
             uniform float uFreq;
             uniform vec3 uBaseColors;
             uniform int uSuperString; 
-            uniform float uLaneDirections; // Handles direct timeline direction inversion overrides
+            uniform float uLaneDirections; // FIXED: Explicit 5-element float array container
 
             float calculateAxisPosition(float fib, float freq, float offset, float direction) {
-                // Direction multiplier tracks regular flow (1.0) or inverted warp state (-1.0)
+                // Modulate temporal flow by individual direction vectors
                 float adjustedTime = uTime * direction; 
                 float rawSway = log(1.0 + abs(sin((adjustedTime * 0.5 + offset) * freq)));
                 return 0.1 + (abs(sin(rawSway * fib)) * 0.8);
@@ -203,7 +254,7 @@
                     int activeSymbol = uSuperString[superIndex];
                     targetX = fract(targetX + float(activeSymbol) * 0.06);
 
-                    // --- QUANTUM LORENTZ CONTRACTION ENGINE ---
+                    // --- QUANTUM LORENTZ CONTRACTION MATRIX ---
                     float dt = 0.001;
                     float nextPos = calculateAxisPosition(uFib[laneIndex], uFreq[laneIndex], dt, uLaneDirections[laneIndex]);
                     float velocity = abs(nextPos - pX[laneIndex]) / dt;
@@ -211,19 +262,17 @@
                     float beta = clamp(velocity / speedOfLightC, 0.0, 0.99);
                     float lorentzFactor = sqrt(1.0 - (beta * beta));
 
-                    // --- GEOMETRIC SHAPE-SHIFTING CALCULATOR ---
+                    // --- GEOMETRIC SHAPE-SHIFTING ENGINE ---
                     float dynamicPhase = log(1.0 + abs(sin((uTime * uLaneDirections[laneIndex]) * uFreq[laneIndex]))) * uFib[laneIndex];
                     float shapeMorphFactor = abs(cos(dynamicPhase * 1.2));
 
                     vec2 contractedDimensions = vec2(baseDimensions.x * lorentzFactor, baseDimensions.y);
                     vec2 localPos = vec2(vUv.x - targetX, localY);
 
-                    // Sample simultaneous SDF variants
                     float dBox = sdfBox(localPos, contractedDimensions);
                     float dRhombus = sdfRhombus(localPos, contractedDimensions * 1.5);
                     float dCircle = length(localPos) - contractedDimensions.x * 1.5;
 
-                    // Blend geometries smoothly based on velocity phase shifts
                     float mixedSDF = mix(dBox, dRhombus, shapeMorphFactor);
                     if (shapeMorphFactor > 0.7) {
                         mixedSDF = mix(mixedSDF, dCircle, (shapeMorphFactor - 0.7) / 0.3);
@@ -231,13 +280,12 @@
 
                     if (mixedSDF < 0.0) {
                         finalColor = activeColors[laneIndex];
-                        // Transform the white artifacts into precise, glowing border outlines
-                        if (mixedSDF > -0.006) finalColor = vec3(1.0, 1.0, 1.0); 
+                        if (mixedSDF > -0.006) finalColor = vec3(1.0, 1.0, 1.0); // Anti-aliased outer frames
                     }
                     if (fract(vUv.y * 6.0) < 0.02) finalColor += vec3(0.04);
                 } 
                 else {
-                    // --- CHANNEL VI: RELATIVISTIC INTEGRATION BUS ---
+                    // --- TRACK VI: UNIFIED MATRIX INTEGRATOR ---
                     finalColor = vec3(0.05, 0.06, 0.08);
                     for (int i = 0; i < 5; i++) {
                         int prevIdx = (i == 0) ? 4 : i - 1;
@@ -308,39 +356,39 @@
             1.0, 1.0, 1.0   
         ]));
 
-        // FIXED ARRAY: Complete 153-item minimal N=5 superpermutation dataset matrix
+        // FIXED UNIFORM PASS: Complete 153-item minimal N=5 superpermutation sequence dataset matrix
         const HARUHI_N5 = new Int32Array();
         gl.uniform1iv(uSuperLoc, HARUHI_N5);
 
-        // Track native timeline directions initialized to standard forward execution (1.0)
         let laneDirectionsArray = new Float32Array([1.0, 1.0, 1.0, 1.0, 1.0]);
         let internalEngineTime = 0, lastRealTimestamp = 0, isEngineRunning = true, runningSpeedMultiplier = 1.0;
 
-        // --- UNDISCLOSED INTERACTIVE INTERCEPT MATRIX ---
-        // Clicking a lane updates the direction array inside GPU registers, flipping its timeline
-        canvas.addEventListener('mousedown', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickY = e.clientY - rect.top;
-            
-            // Map pixel height directly back onto your 6 core canvas lanes
-            const selectedLane = Math.floor((clickY / rect.height) * 6);
-            
-            if (selectedLane < 5) {
-                // Flip execution direction: 1.0 (Forward) -> -1.0 (Warp Reversal State)
-                laneDirectionsArray[selectedLane] *= -1.0;
+        // --- DEDICATED TRACK CONTROL PANEL ATTACHMENT ---
+        // Dynamically binds click event handlers straight to the left column button array layout
+        for (let i = 0; i < 5; i++) {
+            const btn = document.getElementById(`btn-${i}`);
+            btn.addEventListener('click', () => {
+                // Invert timeline direction vector: 1.0 (Forward) <-> -1.0 (Warp Reversal State)
+                laneDirectionsArray[i] *= -1.0;
+                
+                const isWarping = laneDirectionsArray[i] < 0;
+                btn.classList.toggle('active-warp', isWarping);
+                btn.innerHTML = isWarping ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
                 
                 document.getElementById('diagnostics').innerText = 
-                    `LANE OVERRIDE: INVERTING TRACK ${selectedLane + 1} DIRECTIVE TO ${laneDirectionsArray[selectedLane] > 0 ? 'FORWARD' : 'REVERSAL'}`;
-                
-                // Instantly update the modified array via system interrupts
+                    `INTERRUPT INTERCEPT: TRACK ${i+1} FLOW RE-ORIENTED TO ${isWarping ? 'REVERSAL_STATE' : 'FORWARD_STATE'}`;
+
+                // Automatic Restoration: Safely pops the track back into alignment after 4 seconds
                 setTimeout(() => {
-                    if(laneDirectionsArray[selectedLane] < 0) {
-                        laneDirectionsArray[selectedLane] = 1.0; // Automatically pop back out of warp state
-                        document.getElementById('diagnostics').innerText = `TRACK ${selectedLane + 1} SYSTEM RESTORED TO ALIGNMENT`;
+                    if (laneDirectionsArray[i] < 0) {
+                        laneDirectionsArray[i] = 1.0;
+                        btn.classList.remove('active-warp');
+                        btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
+                        document.getElementById('diagnostics').innerText = `SYSTEM AUTO-RESTORED: TRACK ${i+1} QUANTUM FIELD BACK IN SYNC`;
                     }
-                }, 4000); // 4 Second Warp State Boundary window limit
-            }
-        });
+                }, 4000);
+            });
+        }
 
         document.getElementById('playPauseBtn').addEventListener('click', (e) => {
             isEngineRunning = !isEngineRunning;
@@ -357,7 +405,6 @@
             lastRealTimestamp = time;
             if (isEngineRunning) internalEngineTime += delta * runningSpeedMultiplier;
 
-            // Continually push live timeline data and lane orientations to shader units
             gl.uniform1f(uTimeLoc, internalEngineTime);
             gl.uniform1fv(uDirLoc, laneDirectionsArray);
             
@@ -366,6 +413,7 @@
         }
         
         requestAnimationFrame((t) => { lastRealTimestamp = t; requestAnimationFrame(renderPipelineFrame); });
+        document.getElementById('diagnostics').innerText = "GPU ENGINES RESTORED | SHAPE DYNAMICS ACTIVE";
     </script>
 </body>
 </html>
