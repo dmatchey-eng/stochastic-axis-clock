@@ -1,0 +1,10 @@
+{
+  "name": "stochastic-axis-clock",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Multi-axis concurrent clock metrics engine",
+  "main": "clock_compare.js",
+  "scripts": {
+    "start": "node clock_compare.js"
+  }
+}
