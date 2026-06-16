@@ -57,6 +57,13 @@ function fetchAtomicTime() {
     });
 }
 
+// Simulate clock jitter by distorting the timeline sec baseline with micro-variances
+function getTimeWithJitter(baseTimeSec) {
+    // Generate fractional microscopic drift using native mathematical noise
+    let clockJitter = (Math.sin(baseTimeSec * 1000.0) * Math.cos(baseTimeSec * 500.0)) * 0.0003;
+    return baseTimeSec + clockJitter;
+}
+
 function getSpatialPosition(ch, timelineSec) {
     // Aligned to the exact 3.0 frequency multipliers running inside the visual layer
     const rawSway = Math.log1p(Math.abs(Math.sin(timelineSec * ch.freq * 3.0)));
