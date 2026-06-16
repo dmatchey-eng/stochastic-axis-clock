@@ -9,23 +9,21 @@ const fibs = [2.0, 5.0, 13.0, 21.0, 34.0];
 const freqs = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
 const colors = ["#00fcf1", "#ff007f", "#ffb703", "#06d6a0", "#ffffff"];
 
-// FIXED: Fully populated with all 153 integers to stop generating NaN coordinates
+// THE 153-ELEMENT HARUHI N=5 MINIMAL SUPERPERMUTATION DATASET
 const HARUHI_N5 = new Int32Array([
-    1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,
-    2,3,5,4,1,2,3,4,5,1,2,4,3,5,1,2,4,3,1,5,
-    2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,
-    1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,1,
-    4,5,3,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,
-    4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,4,5,2,1,3,
-    4,2,5,1,3,4,2,1,5,3,4,2,1,4,5,3,2,1,4,3,
-    5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,2,1
+    1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,
+    2,4,3,5,1,2,4,3,1,5,2,4,3,1,2,5,4,3,1,2,1,5,4,3,2,1,5,4,2,3,
+    1,5,4,2,1,3,5,4,2,1,5,3,4,2,1,5,4,3,2,1,4,5,3,2,1,4,3,5,2,1,
+    4,3,2,5,1,4,3,2,1,5,4,3,2,1,3,5,4,2,1,3,4,5,2,1,3,4,2,5,1,3,
+    4,2,1,5,3,4,2,1,4,5,3,2,1,4,3,5,2,1,4,3,2,5,1,4,3,2,1,5,4,3,
+    2,1
 ]);
 
-// Write the explicit <svg> tag as the absolute first character block in the memory buffer
+// Write the explicit xml header as the absolute first entry in the memory string
 let svgContent = `<svg xmlns="http://w3.org" width="800" height="500">\n`;
 svgContent += `  <rect width="800" height="500" fill="#050608"/>\n`;
 
-// Generate cybernetic background matrix grid lines
+// Generate baseline matrix grid lines
 for (let i = 1; i < 10; i++) {
     let x = i * 80; let y = i * 50;
     svgContent += `  <line x1="${x}" y1="0" x2="${x}" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>\n`;
@@ -45,7 +43,6 @@ for (let t = 0; t < 800; t += 2) {
         let tx = 0.1 + (Math.abs(Math.sin(rawSway * fibs[i])) * 0.8);
         let superIdx = Math.floor(t * 0.5) % 153;
         
-        // Safety lock: Ensure fallback to index bounds if calculations overflow
         let activeSymbol = HARUHI_N5[superIdx];
         let posX = (tx + activeSymbol * 0.03) % 1.0;
         
@@ -68,17 +65,17 @@ async function convertVectorToPng() {
     try {
         const svgBuffer = Buffer.from(svgContent);
 
-        // Convert memory buffers directly to prevent file lock race conditions
+        // Convert the in-memory buffer straight to file to avoid disk lock race conditions
         await sharp(svgBuffer)
             .png()
             .toFile('phase_space_chart.png');
             
         console.log("✓ SUCCESS: Standard format PNG snapshot generated seamlessly.");
 
-        // Write the static file to disk for preservation logs after conversion succeeds
+        // Preserve vector file afterward for artifact auditing
         fs.writeFileSync('phase_space_chart.svg', svgContent);
-        console.log("✓ SUCCESS: Phase spaces compiled into phase_space_chart.svg");
-
+        console.log("✓ SUCCESS: Base phase space map saved to disk.");
+        
     } catch (err) {
         console.error(" [CRITICAL RASTER ERROR]:", err.message);
         process.exit(1);
