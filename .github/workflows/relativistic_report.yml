@@ -43,40 +43,7 @@ jobs:
     - name: 5. Compile Pristine Vector Layout Map (Explicit Data Ingestion)
       run: |
         echo '<svg>' > workflow_simulation_base.svg
-        echo '  <rect width="800" height="500" fill="#050608"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="80" y1="0" x2="80" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="50" x2="800" y2="50" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="160" y1="0" x2="160" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="100" x2="800" y2="100" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="240" y1="0" x2="240" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="150" x2="800" y2="150" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="320" y1="0" x2="320" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="200" x2="800" y2="200" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="400" y1="0" x2="400" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="250" x2="800" y2="250" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="480" y1="0" x2="480" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="300" x2="800" y2="300" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="560" y1="0" x2="560" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="350" x2="800" y2="350" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="640" y1="0" x2="640" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="400" x2="800" y2="400" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="720" y1="0" x2="720" y2="500" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <line x1="0" y1="450" x2="800" y2="450" stroke="#c5a059" stroke-width="1" opacity="0.1"/>' >> workflow_simulation_base.svg
-        echo '  <text x="30" y="40" fill="#66fcf1" font-family="monospace" font-size="14" font-weight="bold">STOCHASTIC CHRONOTAXIC DRIFT MATRIX MAP</text>' >> workflow_simulation_base.svg
-        echo '  <text x="30" y="60" fill="#8892b0" font-family="monospace" font-size="10">MATHEMATICAL SIMULATION PASSED OVER WORKFLOW ENGINE (N=5)</text>' >> workflow_simulation_base.svg
-        echo '  <polygon points="104,324.13 109,330.13 104,336.13 99,330.13" fill="none" stroke="#00fcf1" stroke-width="1.2" opacity="0.6"/>' >> workflow_simulation_base.svg
-        echo '  <polygon points="104,254.82 109,260.82 104,266.82 99,260.82" fill="none" stroke="#ff007f" stroke-width="1.2" opacity="0.6"/>' >> workflow_simulation_base.svg
-        echo '  <polygon points="104,170.09 109,176.09 104,182.09 99,176.09" fill="none" stroke="#ffb703" stroke-width="1.2" opacity="0.6"/>' >> workflow_simulation_base.svg
-        echo '  <polygon points="104,124.89 109,130.89 104,136.89 99,130.89" fill="none" stroke="#06d6a0" stroke-width="1.2" opacity="0.6"/>' >> workflow_simulation_base.svg
-        echo '  <polygon points="104,78.46 109,84.46 104,90.46 99,84.46" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.6"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="105.13" cy="332.05" r="2" fill="#00fcf1" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="108.25" cy="262.73" r="2" fill="#ff007f" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="108.61" cy="178.00" r="2" fill="#ffb703" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="130.81" cy="132.80" r="2" fill="#06d6a0" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="164.18" cy="86.37" r="2" fill="#ffffff" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <circle cx="106.27" cy="333.91" r="2" fill="#00fcf1" opacity="0.4"/>' >> workflow_simulation_base.svg
-        echo '  <rect x="20" y="20" width="760" height="460" fill="none" stroke="#c5a059" stroke-width="1" opacity="0.3"/>' >> workflow_simulation_base.svg
-        echo '</svg>' >> workflow_simulation_base.svg
+        sed '1d' phase_space_chart.svg >> workflow_simulation_base.svg
         echo '✓ SUCCESS: Valid document stream written sequentially to workflow_simulation_base.svg.'
 
     - name: 6. Parse and Render Vector Data to Standard PNG Format
