@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stochastic Chronotaxic Matrix Core</title>
+    <style>
+        body { background-color: #050608; color: #66fcf1; font-family: 'Courier New', monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
+        h1 { font-size: 1.2rem; letter-spacing: 3px; margin: 0 0 5px 0; text-transform: uppercase; text-shadow: 0 0 10px rgba(102, 252, 241, 0.3); }
+        .subtitle { color: #c5a059; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; }
+        .engine-container { width: 95vw; max-width: 800px; background: #0f1319; border: 1px solid #c5a059; padding: 15px; box-shadow: 0 0 30px rgba(197, 160, 89, 0.15); display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; }
+        .workspace { display: flex; gap: 15px; width: 100%; align-items: stretch; box-sizing: border-box; }
+        .button-panel { display: flex; flex-direction: column; width: 130px; min-width: 130px; box-sizing: border-box; border: 1px solid #c5a05933; background: #050608; }
+        .flip-btn { background: #050608; color: #66fcf1; border: none; border-bottom: 1px solid #c5a05933; height: 96px; font-family: inherit; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; }
+        .flip-btn:hover { background: #1f2833; }
+        .flip-btn.active-warp { color: #050608; background: #c5a059; border-bottom: 1px solid #ffffff; }
+        canvas { flex-grow: 1; height: 480px; background: #000000; display: block; border: 1px solid #c5a059; box-sizing: border-box; }
+        .controls { display: flex; justify-content: space-between; align-items: center; background: #050608; padding: 12px 20px; border: 1px solid #c5a05933; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <h1>STOCHASTIC CHRONOTAXIC MATRIX</h1>
+    <div class="subtitle">Primary Telemetry Broadcaster & Relativistic Phase Array</div>
+
+    <div class="engine-container">
+        <div class="workspace">
+            <div class="button-panel">
+                <button class="flip-btn" id="btn-0">TRACK I<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-1">TRACK II<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-2">TRACK III<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-3">TRACK IV<br>FLIP FIELD</button>
+                <button class="flip-btn" id="btn-4">TRACK V<br>FLIP FIELD</button>
+            </div>
+            <canvas id="clockCanvas"></canvas>
+        </div>
+        <div class="controls">
+            <span id="equivalenceDiagnostics">SYMBOL REF: STANDBY</span>
+            <span style="color:#06d6a0;">BROADCASTING DATA TO LINKED TRANSFORMER</span>
+        </div>
+    </div>
+
+    <script>
+        // Open native cross-window telemetry pipeline
+        const telemetryBus = new BroadcastChannel('clock_telemetry');
+
+        // Fully populated 153-element data string to guarantee vector compliance
+        const HARUHI_N5 = new Int32Array([
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,
+            1,2,3,4,5,1,2,3,4,1,5,2,3,4,1,2,5,3,4,1,2,3,5,4,1,2,3,4,5
+        ]);
+
+        const channelFib = [2.0, 5.0, 13.0, 21.0, 34.0];
+        const channelFreq = [0.0008, 0.0012, 0.0005, 0.0018, 0.0025];
+        const channelColors = ['#00fcf1', '#ff007f', '#ffb703', '#06d6a0', '#ffffff'];
+
+        const canvas = document.getElementById('clockCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 620; canvas.height = 480;
+
+        let laneDirections = [1.0, 1.0, 1.0, 1.0, 1.0];
+
+        function getTrackPosition(idx, timeMs) {
+            let direction = laneDirections[idx];
+            let timeSec = timeMs * 0.001 * direction;
+            let rawSway = Math.log1p(Math.abs(Math.sin((timeSec * 0.5 + idx * 10.0) * channelFreq[idx])));
+            let tx = 0.1 + (Math.abs(Math.sin(rawSway * channelFib[idx])) * 0.8);
+            let superIdx = Math.floor(timeMs * 0.0002) % 153;
+            return (tx + HARUHI_N5[superIdx] * 0.03) % 1.0;
+        }
+
+        let lastRealTime = 0, internalTime = 0;
+
+        function renderMatrixFrame(timestamp) {
+            internalTime += (timestamp - lastRealTime);
+            lastRealTime = timestamp;
+
+            ctx.fillStyle = '#050608';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            let laneHeight = canvas.height / 6;
+
+            let currentPositions = [];
+
+            // 1. Calculate positions and draw active morphing lanes
+            for (let i = 0; i < 5; i++) {
+                let posX = getTrackPosition(i, internalTime);
+                currentPositions.push(posX); // Cache for streaming payload
+                
+                let drawX = posX * canvas.width;
+                let centerY = i * laneHeight + laneHeight / 2;
+                let morph = Math.abs(Math.cos(posX * 3.14));
+
+                ctx.fillStyle = channelColors[i];
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+
+                if (morph < 0.3) {
+                    ctx.arc(drawX, centerY, 15, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+                } else if (morph < 0.6) {
+                    ctx.moveTo(drawX, centerY - 16); ctx.lineTo(drawX + 14, centerY);
+                    ctx.lineTo(drawX, centerY + 16); ctx.lineTo(drawX - 14, centerY);
+                    ctx.closePath(); ctx.fill(); ctx.stroke();
+                } else {
+                    ctx.fillRect(drawX - 12, centerY - 15, 24, 30);
+                    ctx.strokeRect(drawX - 12, centerY - 15, 24, 30);
+                }
+            }
+
+            // 2. Render Horizon System Bus Line
+            let superIdx = Math.floor(internalTime * 0.0002) % 153;
+            let activeSymbol = HARUHI_N5[superIdx];
+            let busY = 5 * laneHeight + laneHeight / 2;
+            let targetX = ((activeSymbol * 0.1) + 0.3) * canvas.width;
+
+            ctx.fillStyle = '#151922'; ctx.fillRect(0, 5 * laneHeight, canvas.width, laneHeight);
+            ctx.strokeStyle = '#c5a05933'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(0, busY); ctx.lineTo(canvas.width, busY); ctx.stroke();
+            ctx.fillStyle = '#c5a059'; ctx.beginPath(); ctx.arc(targetX, busY, 8, 0, Math.PI * 2); ctx.fill();
+
+            document.getElementById('equivalenceDiagnostics').innerText = `SYMBOL REF: N5[#${activeSymbol}] | SYSTEM RUNNING`;
+
+            // --- CRITICAL DISPATCH OVER WIRE ---
+            // Package and stream the calculated arrays down to the open network socket
+            telemetryBus.postMessage({
+                timeMs: internalTime,
+                positions: currentPositions
+            });
+
+            requestAnimationFrame(renderMatrixFrame);
+        }
+
+        // Setup Panel Action Listeners
+        for (let i = 0; i < 5; i++) {
+            const btn = document.getElementById(`btn-${i}`);
+            btn.addEventListener('click', () => {
+                laneDirections[i] *= -1.0;
+                let active = laneDirections[i] < 0;
+                btn.classList.toggle('active-warp', active);
+                btn.innerHTML = active ? `TRACK ${i+1}<br>[WARPING]` : `TRACK ${i+1}<br>FLIP FIELD`;
+                setTimeout(() => {
+                    if (laneDirections[i] < 0) {
+                        laneDirections[i] = 1.0; btn.classList.remove('active-warp');
+                        btn.innerHTML = `TRACK ${i+1}<br>FLIP FIELD`;
+                    }
+                }, 4000);
+            });
+        }
+
+        requestAnimationFrame((t) => { lastRealTime = t; requestAnimationFrame(renderMatrixFrame); });
+    </script>
+</body>
+</html>
