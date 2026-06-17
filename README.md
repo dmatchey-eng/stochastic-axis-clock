@@ -14,18 +14,26 @@ This environment serves as a unified relativistic demo library, mapping how inde
 
 ```text
 stochastic-axis-clock/
-├── README.md                          # Core theoretical blueprint and system whitepaper
-├── clock.html                         # Phase I: Baseline 4-lane WebGL2 non-linear clock engine
-├── superclock.html                    # Phase II: Advanced 5-lane shape-morphing & color-cycling engine
-├── stochastic-chronotaxic-matrix.html # Phase III: Primary multi-axis matrix & telemetry broadcaster
-├── transformer.html                   # Standby Telemetry Deck: 3D point cloud harvester (Awaiting Ingestion)
-├── clock_compare.js                   # Multi-channel Node.js atomic reference comparator
-├── combinatorial_core.js              # Host-side validation matrix for N=5 superpermutations
-├── diagnose_rtc.js                    # Single-channel CPU-to-NTP precision phase profiler
-└── package.json                       # Project manifest enabling native ES Module imports
+├── .github/workflows/
+│   └── relativistic_report.yml         # CI/CD Automation runner: force-kills loggers, dynamically slices, and outputs PNG
+├── .gitignore                          # Ignores local project dependencies and unneeded workspace caches
+├── LICENSE                             # Open-source MIT license agreement
+├── README.md                           # Core theoretical blueprint, whitepaper, and live visual asset deck
+├── clock.html                          # Phase I: 4-lane WebGL2 non-linear clock engine using parallel GPU math
+├── clock_compare.js                    # Multi-channel Node.js Atomic clock reference drift profilier
+├── combinatorial_core.js               # Host-side zero-runtime allocation matrix for N=5 superpermutations
+├── diagnose_rtc.js                     # High-precision single-channel CPU-to-NTP precision phase profiler
+├── generate_matrix.js                  # Server-side math generator (Outputs dynamic path vectors to SVG)
+├── make_chart.js                       # Standalone script mapping baseline grid structures and coordinate points
+├── matrix_snapshot.html                # CSS Grid operational dashboard tracking raw track state percentages
+├── package.json                        # Project manifest metadata unlocking native ES Module specifications
+├── phase_space_chart.png               # Rendered output asset: Standard format image displaying fluidly in the README
+├── phase_space_chart.svg               # Raw mathematical vector path document mapping layout parameters
+├── stochastic-chronotaxic-matrix.html  # Phase III: Broadcaster layout matrix utilizing multi-axis vector math pipelines
+├── stochastic_axis_clock.html          # Transitional workspace file tracking toggle-state frame inversions
+├── superClock.html                     # Phase II: 5-lane GPU shape-morphing matrix (Calculus-optimized derivative model)
+└── transformer.html                    # Standby Telemetry Deck: 3D perspective WebGL scatter cloud point generator
 ```
-
----
 
 ## 🔬 Core Mathematical & Relativistic Principles
 
