@@ -40,11 +40,33 @@ jobs:
         kill -9 $PID_COMP || true
         echo '✓ SUCCESS: Background loops frozen and cleared from memory.'
 
-    - name: 5. Compile Pristine Vector Layout Map (Explicit Data Ingestion)
+    - name: 5. Compile Pristine Vector Layout Map (Dynamic Hybrid Append)
+      # Stage 1: Write your working, verified <svg> root tag as character index 1 to the file disk.
+      # Stage 2: Use sed to strip out the first line of phase_space_chart.svg and append the raw data paths fluidly.
       run: |
         echo '<svg>' > workflow_simulation_base.svg
-        sed '1d' phase_space_chart.svg >> workflow_simulation_base.svg
-        echo '✓ SUCCESS: Valid document stream written sequentially to workflow_simulation_base.svg.'
+                node -e "
+        import fs from 'fs';
+        if (fs.existsSync('phase_space_chart.svg')) {
+          let rawData = fs.readFileSync('phase_space_chart.svg', 'utf8');
+          // Find the exact marker index of the very first closing angle bracket
+          let firstBracketIndex = rawData.indexOf('>');
+          if (firstBracketIndex !== -1) {
+            // Extract everything strictly AFTER the first '>' character
+            let detailContent = rawData.substring(firstBracketIndex + 1);
+            fs.appendFileSync('workflow_simulation_base.svg', detailContent);
+            console.log('✓ Successfully stripped preceding tag block. Detail paths appended.');
+          } else {
+            console.error('Delimiter bracket not found.');
+            process.exit(1);
+          }
+        } else {
+          console.error('Source template missing.');
+          process.exit(1);
+        }
+        "
+        echo "✓ SUCCESS: Goodbye successfully hello."
+
 
     - name: 6. Parse and Render Vector Data to Standard PNG Format
       run: |
